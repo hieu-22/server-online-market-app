@@ -1,54 +1,81 @@
 import db from "../models/index"
 import jwt from "jsonwebtoken"
+import { Op } from "sequelize"
+import bcrypt from "bcrypt"
+import { login } from "../services/auth"
 
-export const register = async (req, res) => {
+export const handleRegister = async (req, res) => {
     try {
-        const { userAccount, password, address } = req.body
-
-        // hash password
-        const salt = bcrypt.genSaltSync(10)
-        const hashPassword = bcrypt.hashSync(password, salt)
+        const { userAccount, password } = req.body
+        const userName = userAccount.split("@")[0]
+        const newUser = {
+            email: userAccount,
+            password: password,
+            userName: userName,
+        }
+        const checkUserExisted = await db.Users.findOne({
+            where: {
+                [Op.or]: {
+                    email: userAccount,
+                    phoneNumber: userAccount,
+                },
+            },
+        })
+        if (checkUserExisted) {
+            res.status(200).json({
+                message: "User already existed, please try another!",
+            })
+            return
+        }
 
         // insert user to database
-        const user = await db.User.create({
-            userAccount,
-            password: hashPassword,
-            phoneNumber,
-            address,
+        await db.Users.create(newUser)
+
+        const user = await db.Users.findOne({
+            attributes: { exclude: ["password", "createdAt", "updatedAt"] },
+            where: {
+                [Op.or]: {
+                    email: userAccount,
+                    phoneNumber: userAccount,
+                },
+            },
         })
 
         // token
+        const token = jwt.sign({ ...user }, process.env.JWT_SECRET_KEY, {
+            expiresIn: "24h",
+        })
 
-        return res
-            .status(201)
-            .json({ data: user, message: "Register successfully!" })
+        res.status(201).json({
+            user: user,
+            token,
+            message: "Register successfully!",
+        })
     } catch (error) {
-        return res.status(500).json(error)
+        return res.status(500).json({ error: error.message })
     }
 }
 
 export const handleLogin = async (req, res) => {
-    const { userAccount, password } = req.body
+    try {
+        const { userAccount, password } = req.body
 
-    // check user in db
-    const user = db.User.findOne({
-        where: {
-            userAccount: userAccount,
-        },
-    })
-    if (!user) res.status(404).json({ message: "User not found" })
+        const responses = await login({ userAccount, password })
+        if (responses.message === "NOT FOUND") {
+            return res.status(404).json(responses)
+        }
 
-    // check password
-    const match = await bcrypt.compare(password, user.password)
-    if (!match) res.status(404).json({ message: "Wrong password" })
+        if (responses.message === "WRONG PASSWORD") {
+            return res.status(401).json(responses)
+        }
 
-    user.password = undefined
-    const token = jwt.sign({ ...user }, process.env.JWT_SECRET_KEY, {
-        expiresIn: "1h",
-    })
+        if (responses.errorCode === 2) {
+            return res.status(500).json(responses)
+        }
 
-    res.status(200).json({
-        user: user,
-        token,
-    })
+        res.status(200).json(responses)
+    } catch (error) {
+        console.log(`Error at handleLogin: ${error.message}`)
+        res.status(500).json({ Error: error, message: "Internal Server Error" })
+    }
 }

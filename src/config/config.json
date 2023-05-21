@@ -4,7 +4,9 @@
         "password": "@Email123",
         "database": "my_db",
         "host": "127.0.0.1",
-        "dialect": "mysql"
+        "dialect": "mysql",
+        "timestamp": "true",
+        "timezone": "+07:00"
     },
     "test": {
         "username": "root",

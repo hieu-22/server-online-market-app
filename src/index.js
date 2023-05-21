@@ -1,8 +1,10 @@
 import express from "express"
 import commonConfig from "./config/commonConfig"
 import auth from "./routes/auth"
-import upload from "./routes/upload"
 import connectDB from "./config/connectDB"
+import user from "./routes/user"
+import post from "./routes/post"
+import conversation from "./routes/conversation"
 
 /**Configurations */
 const app = express()
@@ -15,7 +17,9 @@ connectDB()
 
 /**Routes */
 app.use("/api", auth)
-app.use("/upload", upload)
+app.use("/api", user)
+app.use("/api", post)
+app.use("/api", conversation)
 
 /**App listening */
 app.listen(PORT, () => {

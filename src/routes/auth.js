@@ -1,9 +1,10 @@
 import express from "express"
-import { register } from "../controllers/auth"
+import { handleRegister, handleLogin } from "../controllers/auth"
 
 const router = express.Router()
 
 // routes
-router.post("/auth/register", register)
+router.post("/register", handleRegister)
+router.post("/login", handleLogin)
 
 export default router
