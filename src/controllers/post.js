@@ -37,7 +37,7 @@ export const handleGetPostsByUserId = async (req, res) => {
 export const handleSearchPosts = async (req, res) => {
     const { searchKeys } = req.query
     const decodedSearchKeys = decodeURIComponent(searchKeys)
-    if (decodedSearchKeys.length <= 2) {
+    if (decodedSearchKeys.length <= 1) {
         return res.json([])
     }
     try {
@@ -95,7 +95,6 @@ export const handleGetNextPosts = async (req, res) => {
     }
 }
 
-// ADD POST AND IMAGES: save post information - return req.post next() => Save imageURLs - return req.imagesUrls => Return post,imageUrl,...
 export const handleAddPost = async (req, res, next) => {
     const { title, price, product_condition, description, user_id, address } =
         req.body
@@ -105,6 +104,7 @@ export const handleAddPost = async (req, res, next) => {
         lower: true,
     })
     const post_url = `${postUrlSlug}-${uuid()}`
+    const now = new Date()
     try {
         const response = await addPost({
             title,
@@ -114,6 +114,7 @@ export const handleAddPost = async (req, res, next) => {
             post_url,
             user_id: parseInt(user_id),
             address,
+            expiryDate: new Date(now.getTime() + 100 * 24 * 60 * 60 * 1000),
         })
         if (response.errorCode === 2) {
             const images = req.files
@@ -234,8 +235,12 @@ export const handleUpdatePost = async (req, res) => {
 
 export const handleDeletePost = async (req, res) => {
     const postId = req.params.postId
+    const { userId } = req.query
     try {
-        const responses = await deletePost(postId)
+        const responses = await deletePost({ userId, postId })
+        if (responses.message === "NOT FOUND") {
+            return res.status(404).json(responses)
+        }
         if (responses.errorCode === 2) {
             res.status(500).json(responses)
             return

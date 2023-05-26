@@ -10,10 +10,32 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
+            User_Conversation.belongsTo(models.Users, {
+                foreignKey: "user_id",
+                as: "user",
+            })
+            User_Conversation.belongsTo(models.Conversations, {
+                foreignKey: "conversation_id",
+                as: "conversation",
+            })
         }
     }
     User_Conversation.init(
-        {},
+        {
+            id: {
+                type: DataTypes.INTEGER,
+                primaryKey: true,
+                autoIncrement: true,
+            },
+            conversation_id: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+            },
+            user_id: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+            },
+        },
         {
             sequelize,
             modelName: "User_Conversation",

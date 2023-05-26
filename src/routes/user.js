@@ -10,6 +10,8 @@ import {
     handleAddRelationship,
     handleRemoveRelationShip,
     handleSavePost,
+    handleGetSavedPostsByUserId,
+    handleDeleteSavedPost,
 } from "../controllers/user"
 import upload from "../middleware/cloudinaryUploader"
 import { verifyToken } from "../middleware/verifyToken"
@@ -20,6 +22,7 @@ const router = express.Router()
 router.post("/user/:userId/save-post", handleSavePost)
 router.post("/user/:id/add-relationship", handleAddRelationship)
 /**READ */
+router.get("/user/get-saved-posts", handleGetSavedPostsByUserId)
 router.get("/user/:id", handleGetUserById)
 router.get("/user/relationships/followings", verifyToken, handleGetFollowing)
 router.get("/user/relationships/followers", verifyToken, handleGetFollowers)
@@ -36,5 +39,6 @@ router.patch("/user/:id/update-password", verifyToken, handleUpdatePassword)
 router.patch("/user/:id/update-status", handleUpdateStatus)
 /**DELETE */
 router.delete("/user/:id/remove-relationship", handleRemoveRelationShip)
+router.delete("/user/delete-saved-post", handleDeleteSavedPost)
 
 export default router

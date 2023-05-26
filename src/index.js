@@ -1,5 +1,7 @@
 import express from "express"
+import { createServer } from "http"
 import commonConfig from "./config/commonConfig"
+import applyWebSocket from "./config/websocket"
 import auth from "./routes/auth"
 import connectDB from "./config/connectDB"
 import user from "./routes/user"
@@ -9,11 +11,14 @@ import conversation from "./routes/conversation"
 /**Configurations */
 const app = express()
 commonConfig(app)
-
 const PORT = process.env.PORT || 5001
+const server = createServer(app)
 
 /**Connect to database */
 connectDB()
+
+/**WEBSOCKET */
+applyWebSocket(server)
 
 /**Routes */
 app.use("/api", auth)
@@ -22,6 +27,6 @@ app.use("/api", post)
 app.use("/api", conversation)
 
 /**App listening */
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log("App running on port", PORT)
 })

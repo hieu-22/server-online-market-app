@@ -1,5 +1,7 @@
 "use strict"
+import pako from "pako"
 const { Model } = require("sequelize")
+
 module.exports = (sequelize, DataTypes) => {
     class Post extends Model {
         /**
@@ -9,8 +11,9 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
-            Post.hasOne(models.Conversations, {
+            Post.hasMany(models.Conversations, {
                 foreignKey: "post_id",
+                as: "conversations",
             })
             Post.belongsTo(models.Users, {
                 foreignKey: "user_id",
@@ -48,6 +51,26 @@ module.exports = (sequelize, DataTypes) => {
             description: {
                 type: DataTypes.TEXT,
                 allowNull: false,
+                set(value) {
+                    console.log(">>> value: ", value)
+                    const deflatedValue = pako.deflate(value)
+                    console.log(">>> deflatedValue: ", value)
+                    this.setDataValue(
+                        "description",
+                        JSON.stringify(deflatedValue)
+                    )
+                },
+                get() {
+                    const deflatedDescription = this.getDataValue("description")
+
+                    const inflatedDescription = pako.inflate(
+                        JSON.parse(deflatedDescription),
+                        {
+                            to: "string",
+                        }
+                    )
+                    return inflatedDescription
+                },
             },
             address: {
                 type: DataTypes.STRING,
@@ -58,6 +81,10 @@ module.exports = (sequelize, DataTypes) => {
             },
             user_id: {
                 type: DataTypes.INTEGER,
+            },
+            expiryDate: {
+                allowNull: false,
+                type: DataTypes.DATE,
             },
         },
         {

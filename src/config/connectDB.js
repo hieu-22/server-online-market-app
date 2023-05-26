@@ -4,6 +4,7 @@ const connectDB = () => {
     const sequelize = new Sequelize("my_db", "root", "@Email123", {
         host: "localhost",
         dialect: "mysql",
+        logging: false,
     })
 
     ;(async () => {

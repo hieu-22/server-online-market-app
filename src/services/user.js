@@ -1,25 +1,59 @@
 import db from "../models/index"
 import bcrypt from "bcrypt"
-import { Op } from "sequelize"
+import { Op, where } from "sequelize"
 
 /**CREATE */
 export const savePost = async ({ userId, postId }) => {
-    const newSavedPost = { user_id: userId, post_id: postId }
+    const user_id = userId
+    const post_id = postId
+    const newSavedPost = { user_id, post_id }
+    console.log("=>newSavedPost", newSavedPost)
     try {
+        const savedPostExisted = await db.SavedPosts.findOne({
+            where: {
+                post_id: post_id,
+                user_id: user_id,
+            },
+        })
+        console.log("=>savedPostExisted", savedPostExisted)
+
+        if (savedPostExisted) {
+            return {
+                message: "The post have already been saved",
+            }
+        }
+
         const savedPost = await db.SavedPosts.create(newSavedPost)
+        console.log("=>savedPost", savedPost)
+
+        const createdSavedPost = await db.SavedPosts.findByPk(
+            savedPost.dataValues.id,
+            {
+                include: {
+                    model: db.Posts,
+                    as: "post",
+                    include: {
+                        model: db.Images,
+                        as: "images",
+                    },
+                },
+            }
+        )
 
         return {
-            savdPost: savedPost,
+            savedPost: createdSavedPost,
             errorCode: 0,
             message: "Save post successfully",
         }
     } catch (error) {
+        console.log(error)
         return {
             errorCode: 2,
             message: error.message,
         }
     }
 }
+/**READ */
 export const getAllFollowing = async (userId) => {
     try {
         const followingId = await db.Relationships.findAll({
@@ -111,6 +145,66 @@ export const getAllFollowers = async (userId) => {
     }
 }
 
+export const getSavedPostsByUserId = async (userId) => {
+    try {
+        const savedPosts = await db.SavedPosts.findAll({
+            where: {
+                user_id: userId,
+            },
+            include: {
+                model: db.Posts,
+                as: "post",
+                include: {
+                    model: db.Images,
+                    as: "images",
+                },
+            },
+        })
+        return {
+            savedPosts: savedPosts,
+            errorCode: 0,
+            message: "ok",
+        }
+    } catch (error) {
+        return {
+            errorCode: 2,
+            message: error.message,
+        }
+    }
+}
+/**UPDATE */
+/**DELETE */
+export const deleteSavedPost = async ({ userId, postId }) => {
+    try {
+        const destroyRes = await db.SavedPosts.destroy({
+            where: {
+                [Op.and]: [{ post_id: postId }, { user_id: userId }],
+            },
+        })
+        if (destroyRes === 0) {
+            return {
+                errorCode: 1,
+                message: "SAVED POST NOT FOUND",
+            }
+        }
+        const updatedSavedPosts = await db.SavedPosts.findAll({
+            where: {
+                user_id: userId,
+            },
+        })
+
+        return {
+            updatedSavedPosts: updatedSavedPosts,
+            errorCode: 0,
+            message: "Delete successfully!",
+        }
+    } catch (error) {
+        return {
+            errorCode: 2,
+            message: error.message,
+        }
+    }
+}
 export const updateUser = async ({ id, updatedInformation }) => {
     try {
         const user = await db.Users.findByPk(id)

@@ -29,7 +29,7 @@ export const handleGetMessagesByConversationId = async (req, res) => {
 
 export const handGetConversationByUserId = async (req, res) => {
     //
-    const userId = req.params.userId
+    const userId = req.query.userId
     try {
         const responses = await getConversationByUserId(userId)
         if (responses.errorCode === 2) {

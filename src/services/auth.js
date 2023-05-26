@@ -29,30 +29,17 @@ export const login = async ({ userAccount, password }) => {
             attributes: {
                 exclude: ["password"],
             },
-            // include: [
-            //     {
-            //         model: db.Posts,
-            //         as: "savedPosts",
-            //         attributes: {
-            //             exclude: [""],
-            //         },
-            //         include: {
-            //             model: db.Images,
-            //             as: "images",
-            //         },
-            //     },
-            //     {
-            //         model: db.Posts,
-            //         as: "posts",
-            //         attributes: {
-            //             exclude: ["user_id"],
-            //         },
-            //         include: {
-            //             model: db.Images,
-            //             as: "images",
-            //         },
-            //     },
-            // ],
+            include: {
+                model: db.Posts,
+                as: "posts",
+                attributes: {
+                    exclude: ["user_id"],
+                },
+                include: {
+                    model: db.Images,
+                    as: "images",
+                },
+            },
         })
 
         const { id, email, userName } = user

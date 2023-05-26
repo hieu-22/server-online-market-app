@@ -10,21 +10,46 @@ import {
     addRelationShip,
     removeRelationShip,
     savePost,
+    getSavedPostsByUserId,
+    deleteSavedPost,
 } from "../services/user"
 import { myCloudinary as cloudinary } from "../middleware/cloudinaryUploader"
+import { deletePost } from "../services/post"
 
 /**CREATE */
 export const handleSavePost = async (req, res) => {
     const userId = req.params.userId
     const postId = req.query.postId
     try {
-        const responses = await savePost({ userId, postId })
+        const responses = await savePost({
+            userId: parseInt(userId),
+            postId: parseInt(postId),
+        })
+        if (responses.message === "The post have already been saved") {
+            return res.status(409).json(responses)
+        }
+
         if (responses.errorCode === 2) {
-            res.status(500).json(responses)
+            return res.status(500).json(responses)
         }
         res.status(200).json(responses)
     } catch (error) {
         console.log(`Error at handleSavePost: ${error.message}`)
+        res.status(500).json({ Error: error, message: "Internal Server Error" })
+    }
+}
+
+/**UPDATE */
+export const handleGetSavedPostsByUserId = async (req, res) => {
+    const userId = req.query.userId
+    try {
+        const responses = await getSavedPostsByUserId(userId)
+        if (responses.errorCode === 2) {
+            return res.status(500).json(responses)
+        }
+        res.status(200).json(responses)
+    } catch (error) {
+        console.log(`Error at handleGetSavedPostsByUserId: ${error.message}`)
         res.status(500).json({ Error: error, message: "Internal Server Error" })
     }
 }
@@ -175,7 +200,7 @@ export const handleUpdateStatus = async (req, res) => {
     }
 }
 
-// removeRelationShip
+/**DELETE */
 export const handleRemoveRelationShip = async (req, res) => {
     const userId = req.params.id
     const otherUserId = req.query.otherUserId
@@ -190,6 +215,23 @@ export const handleRemoveRelationShip = async (req, res) => {
         res.status(200).json(responses)
     } catch (error) {
         console.log(`Error at handleUpdateStatus: ${error.message}`)
+        res.status(500).json({ Error: error, message: "Internal Server Error" })
+    }
+}
+
+export const handleDeleteSavedPost = async (req, res) => {
+    const { userId, postId } = req.query
+    try {
+        const responses = await deleteSavedPost({ userId, postId })
+        if (responses.message === "SAVED POST NOT FOUND") {
+            return res.status(404).json(responses)
+        }
+        if (responses.errorCode === 2) {
+            return res.status(500).json(responses)
+        }
+        res.status(200).json(responses)
+    } catch (error) {
+        console.log(`Error at handleDeleteSavedPost: ${error.message}`)
         res.status(500).json({ Error: error, message: "Internal Server Error" })
     }
 }

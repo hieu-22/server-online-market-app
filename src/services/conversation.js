@@ -47,7 +47,7 @@ export const addConversation = async ({ userId, postId }) => {
             ],
         })
         return {
-            Chat: Chat,
+            chat: Chat,
             errorCode: 0,
             message: "Create conversation successfully!",
         }
@@ -55,7 +55,7 @@ export const addConversation = async ({ userId, postId }) => {
         console.log("ERROR at addConversation: ", error.message)
         return {
             errorCode: 2,
-            message: "Failed to create!",
+            message: "Failed to create chat!",
             errorMessage: error.message,
         }
     }
@@ -106,32 +106,38 @@ export const getMessagesByConversationId = async (conversationId) => {
 
 export const getConversationByUserId = async (userId) => {
     try {
-        const conversationIds = await db.User_Conversation.findAll({
-            attributes: ["conversation_id"],
+        const conversations = await db.User_Conversation.findAll({
+            attributes: [],
             where: {
                 user_id: userId,
             },
+            include: {
+                model: db.Conversations,
+                as: "conversation",
+                include: [
+                    {
+                        model: db.Messages,
+                        as: "messages",
+                        order: [["createdAt", "DESC"]],
+                    },
+                    {
+                        model: db.Users,
+                        as: "chatMembers",
+                        through: { attributes: [] },
+                    },
+                    {
+                        model: db.Posts,
+                        as: "post",
+                        attributes: ["title", "price", "post_url"],
+                        include: {
+                            model: db.Images,
+                            as: "images",
+                        },
+                    },
+                ],
+            },
         })
 
-        const conversations = await Promise.all(
-            conversationIds.map(async (id) => {
-                const conversation = await db.Conversations.findByFk(id)
-                console.log(">>> conversation: ", conversation)
-                return conversation.dataValues
-            })
-        )
-        console.log(">>> conversations: ", conversations)
-
-        await conversations.forEach(async (conversation) => {
-            const conversationId = conversation.dataValues.id
-            const messages = await db.Messages.findAll({
-                where: {
-                    conversation_id: conversationId,
-                },
-            })
-            conversation.messages = messages
-        })
-        console.log(">>> Editted conversations: ", conversations)
         return {
             conversations: conversations,
             errorCode: 0,

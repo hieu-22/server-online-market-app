@@ -16,7 +16,7 @@ import upload from "../middleware/cloudinaryUploader"
 const router = express.Router()
 
 /*CREATE */
-// Create post, images
+// ADD POST AND IMAGES: save post information - return req.post next() => Save imageURLs - return req.imagesUrls => Return post,imageUrl,...
 router.post(
     "/posts/add-post",
     upload.array("images"),

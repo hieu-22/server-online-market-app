@@ -18,7 +18,7 @@ router.get(
     "/conversation/:conversationId/messages",
     handleGetMessagesByConversationId
 )
-router.get("/conversation/:userId", handGetConversationByUserId)
+router.get("/conversation/get-all", handGetConversationByUserId)
 
 /**UPDATE */
 router.patch(

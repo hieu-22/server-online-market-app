@@ -20,6 +20,10 @@ module.exports = (sequelize, DataTypes) => {
                 foreignKey: "conversation_id",
                 as: "messages",
             })
+            Conversation.belongsTo(models.Posts, {
+                foreignKey: "post_id",
+                as: "post",
+            })
         }
     }
     Conversation.init(

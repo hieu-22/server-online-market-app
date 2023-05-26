@@ -62,6 +62,7 @@ export const searchPosts = async ({ searchKeys }) => {
         }
     }
 }
+
 /**UPDATE */
 /**DELETE */
 
@@ -171,7 +172,6 @@ export const addImageUrl = async ({ images, postId }) => {
             })
         )
         const savedImages = await db.Images.bulkCreate(imageUrlsinstances)
-        console.log(savedImages)
         const imagesUrls = await savedImages.map((image) => {
             const imageUrl = image.dataValues.imageUrl
             return imageUrl
@@ -292,7 +292,7 @@ export const updatePost = async (newPost, images, postId, imageIds) => {
     }
 }
 
-export const deletePost = async (postId) => {
+export const deletePost = async ({ userId, postId }) => {
     try {
         const postImages = await db.Images.findAll({
             where: {
@@ -319,15 +319,29 @@ export const deletePost = async (postId) => {
                 post_id: postId,
             },
         })
-        console.log(">>> deletedImagesRows: ", deletedImagesRows)
+        // console.log(">>> deletedImagesRows: ", deletedImagesRows)
 
         const deletedPostsRows = await db.Posts.destroy({
             where: {
                 id: postId,
             },
         })
-        console.log(">>> deletedPostsRows: ", deletedPostsRows)
+
+        if (deletedPostsRows === 0) {
+            return {
+                errorCode: 1,
+                message: "NOT FOUND",
+            }
+        }
+
+        const updatedPosts = await db.Posts.findAll({
+            where: {
+                user_id: userId,
+            },
+        })
+        // console.log(">>> deletedPostsRows: ", deletedPostsRows)
         return {
+            posts: updatedPosts,
             message: "Delete post successfully!",
         }
     } catch (error) {
