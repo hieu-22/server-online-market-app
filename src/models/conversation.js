@@ -24,6 +24,11 @@ module.exports = (sequelize, DataTypes) => {
                 foreignKey: "post_id",
                 as: "post",
             })
+            Conversation.belongsToMany(models.Users, {
+                through: "Conversations_Hid_Users",
+                foreignKey: "conversation_id",
+                as: "hid_user",
+            })
         }
     }
     Conversation.init(
@@ -31,6 +36,11 @@ module.exports = (sequelize, DataTypes) => {
             title: {
                 type: DataTypes.STRING,
                 allowNull: false,
+            },
+            is_hidden: {
+                type: DataTypes.BOOLEAN,
+                allowNull: false,
+                defaultValue: false,
             },
             post_id: {
                 type: DataTypes.INTEGER,

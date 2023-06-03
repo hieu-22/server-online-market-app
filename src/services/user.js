@@ -173,6 +173,46 @@ export const getSavedPostsByUserId = async (userId) => {
     }
 }
 /**UPDATE */
+export const activateUserOnlineStatus = async (userId) => {
+    try {
+        await db.Users.update(
+            {
+                isOnline: true,
+            },
+            {
+                where: {
+                    id: userId,
+                },
+            }
+        )
+    } catch (error) {
+        console.log("Error at activateUserOnlineStatus: ", error.message)
+        return {
+            errorCode: 2,
+            message: error.message,
+        }
+    }
+}
+export const deactivateUserOnlineStatus = async (userId) => {
+    try {
+        await db.Users.update(
+            {
+                isOnline: false,
+            },
+            {
+                where: {
+                    id: userId,
+                },
+            }
+        )
+    } catch (error) {
+        console.log("Error at deactivateUserOnlineStatus: ", error.message)
+        return {
+            errorCode: 2,
+            message: error.message,
+        }
+    }
+}
 /**DELETE */
 export const deleteSavedPost = async ({ userId, postId }) => {
     try {

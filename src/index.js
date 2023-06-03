@@ -3,7 +3,6 @@ import { createServer } from "http"
 import commonConfig from "./config/commonConfig"
 import applyWebSocket from "./config/websocket"
 import auth from "./routes/auth"
-import connectDB from "./config/connectDB"
 import user from "./routes/user"
 import post from "./routes/post"
 import conversation from "./routes/conversation"
@@ -13,9 +12,6 @@ const app = express()
 commonConfig(app)
 const PORT = process.env.PORT || 5001
 const server = createServer(app)
-
-/**Connect to database */
-connectDB()
 
 /**WEBSOCKET */
 applyWebSocket(server)

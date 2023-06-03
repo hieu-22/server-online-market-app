@@ -39,6 +39,11 @@ module.exports = (sequelize, DataTypes) => {
                 foreignKey: "user_id",
                 as: "savedPosts",
             })
+            User.belongsToMany(models.Conversations, {
+                through: "Conversations_Hid_Users",
+                foreignKey: "user_id",
+                as: "hidden_conversation",
+            })
         }
     }
     User.init(

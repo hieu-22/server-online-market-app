@@ -3,8 +3,9 @@ import {
     getConversationByUserId,
     addMessage,
     deleteMessage,
-    addConversation,
+    addConversationByPost,
     updateMessage,
+    deleteChatByUserId,
 } from "../services/conversation"
 
 export const handleGetMessagesByConversationId = async (req, res) => {
@@ -27,7 +28,7 @@ export const handleGetMessagesByConversationId = async (req, res) => {
     }
 }
 
-export const handGetConversationByUserId = async (req, res) => {
+export const handGetConversationByUserId = async ({ req, res }) => {
     //
     const userId = req.query.userId
     try {
@@ -45,14 +46,17 @@ export const handGetConversationByUserId = async (req, res) => {
     }
 }
 
-export const handleAddConversation = async (req, res) => {
+export const handleAddConversationByPost = async (req, res) => {
     const { userId, postId } = req.query
     try {
-        const responses = await addConversation({ userId, postId })
-        if (responses.message === "NOT FOUND") {
+        const responses = await addConversationByPost({ userId, postId })
+        if (responses.message === "POST NOT FOUND") {
             return res.status(404).json(responses)
         }
 
+        if (responses.message === "CHAT ALREADY EXISTED") {
+            return res.status(200).json(responses)
+        }
         res.status(200).json(responses)
     } catch (error) {
         console.log(`Error at handleAddConversation: ${error.message}`)
@@ -65,10 +69,13 @@ export const handleAddConversation = async (req, res) => {
 export const handleAddMessage = async (req, res) => {
     const { conversation_id, user_id } = req.query
     const { content } = req.body
-    const message = { user_id, content, conversation_id }
-    console.log(">>> message: ", message)
+
     try {
-        const responses = await addMessage(message)
+        const responses = await addMessage({
+            user_id,
+            content,
+            conversation_id,
+        })
         if (responses.errorCode === 2) {
             res.status(500).json(responses)
             return
@@ -102,7 +109,7 @@ export const handleUpdateMessage = async (req, res) => {
         })
     }
 }
-
+//DELETE
 export const handleDeleteMessage = async (req, res) => {
     const messageId = req.params.messageId
     try {
@@ -114,6 +121,19 @@ export const handleDeleteMessage = async (req, res) => {
         res.status(200).json(responses)
     } catch (error) {
         console.log(`Error at handleDeleteMessage: ${error.message}`)
+        res.status(500).json({
+            message: "Internal Server Error",
+        })
+    }
+}
+export const handleDeleteChatByUserId = async (req, res) => {
+    const { conversation_id, user_id } = req.query
+    try {
+        const responses = await deleteChatByUserId({ conversation_id, user_id })
+        //handle mysql error
+        res.status(200).json(responses)
+    } catch (error) {
+        console.log(`Error at deleteChatByUserId: ${error.message}`)
         res.status(500).json({
             message: "Internal Server Error",
         })

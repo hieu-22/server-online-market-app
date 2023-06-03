@@ -1,7 +1,7 @@
 import db from "../models/index"
-
+import { Op } from "sequelize"
 /**CREATE */
-export const addConversation = async ({ userId, postId }) => {
+export const addConversationByPost = async ({ userId, postId }) => {
     try {
         // find Post and author to get author id
         const post = await db.Posts.findByPk(postId, {
@@ -10,7 +10,7 @@ export const addConversation = async ({ userId, postId }) => {
         if (!post) {
             return {
                 errorCode: 1,
-                message: "NOT FOUND",
+                message: "POST NOT FOUND",
             }
         }
         const newConversation = {
@@ -18,6 +18,47 @@ export const addConversation = async ({ userId, postId }) => {
             post_id: postId,
         }
         const postUserId = post.dataValues.user_id
+
+        const existedConversationsByPostId = await db.Conversations.findAll({
+            where: {
+                post_id: postId,
+            },
+            include: {
+                model: db.Users,
+                as: "chatMembers",
+                through: { attributes: ["user_id"] },
+            },
+        })
+        let conversationExisted = false
+        let existedConversationId
+        for (let i = 0; i < existedConversationsByPostId.length; i++) {
+            // console.log(
+            //     "=> At i =",
+            //     i,
+            //     " :",
+            //     existedConversationsByPostId[i].chatMembers[0].User_Conversation
+            //         .user_id,
+            //     "and userId: ",
+            //     userId
+            // )
+            const chatUserId = existedConversationsByPostId[i].chatMembers.some(
+                (member) => member.User_Conversation.user_id === +userId
+            )
+            // console.log("conversationExisted: ", chatUserId)
+            if (chatUserId) {
+                conversationExisted = true
+                existedConversationId = existedConversationsByPostId[i].id
+                break
+            }
+        }
+
+        if (conversationExisted) {
+            return {
+                chatId: existedConversationId,
+                errorCode: 1,
+                message: "CHAT ALREADY EXISTED",
+            }
+        }
 
         // create conversation
         const result = await db.Conversations.create(newConversation)
@@ -34,17 +75,39 @@ export const addConversation = async ({ userId, postId }) => {
         )
 
         const Chat = await db.Conversations.findByPk(conversationId, {
-            include: [
-                {
-                    model: db.Users,
-                    as: "chatMembers",
-                    through: { attributes: [] },
-                },
-                {
-                    model: db.Messages,
-                    as: "messages",
-                },
-            ],
+            include: {
+                model: db.Conversations,
+                as: "conversation",
+                include: [
+                    {
+                        model: db.Users,
+                        as: "hid_user",
+                        through: { attributes: [] },
+                        attributes: ["id"],
+                    },
+                    {
+                        model: db.Messages,
+                        as: "messages",
+                        order: [["createdAt", "DESC"]],
+                    },
+                    {
+                        model: db.Users,
+                        as: "chatMembers",
+                        through: { attributes: [] },
+                    },
+
+                    {
+                        model: db.Posts,
+                        as: "post",
+                        attributes: ["title", "price", "post_url"],
+                        include: {
+                            model: db.Images,
+                            as: "images",
+                        },
+                    },
+                ],
+                order: [],
+            },
         })
         return {
             chat: Chat,
@@ -61,14 +124,35 @@ export const addConversation = async ({ userId, postId }) => {
     }
 }
 
-export const addMessage = async (newMessage) => {
+export const addMessage = async ({ user_id, content, conversation_id }) => {
+    const newMessage = { user_id, content, conversation_id }
     try {
         const message = await db.Messages.create(newMessage)
+        // conversation updatedAt updating
+        const conversation = await db.Conversations.findByPk(conversation_id)
+
+        await db.Conversations.update(
+            {
+                title: conversation.dataValues.title,
+            },
+            {
+                where: {
+                    id: conversation_id,
+                },
+            }
+        )
+
         // console.log(">>> created message: ", createdMessage.dataValues.id)
         const createdMessage = await db.Messages.findByPk(message.dataValues.id)
 
+        await db.Conversations_Hid_Users.destroy({
+            where: {
+                conversation_id: conversation_id,
+            },
+        })
+
         return {
-            messageData: createdMessage,
+            newMessage: createdMessage,
             errorCode: 0,
             message: "Ok",
         }
@@ -83,28 +167,7 @@ export const addMessage = async (newMessage) => {
 }
 
 /**READ */
-export const getMessagesByConversationId = async (conversationId) => {
-    try {
-        const messages = await db.Messages.findAll({
-            where: {
-                conversation_id: conversationId,
-            },
-        })
-        return {
-            messages: messages,
-            errorCode: 0,
-            message: "Ok",
-        }
-    } catch (error) {
-        return {
-            message: "Failed to get messages",
-            errorCode: 2,
-            errorMessage: error.message,
-        }
-    }
-}
-
-export const getConversationByUserId = async (userId) => {
+export const getConversationByUserId = async ({ userId }) => {
     try {
         const conversations = await db.User_Conversation.findAll({
             attributes: [],
@@ -116,9 +179,16 @@ export const getConversationByUserId = async (userId) => {
                 as: "conversation",
                 include: [
                     {
+                        model: db.Users,
+                        as: "hid_user",
+                        through: { attributes: [] },
+                        attributes: ["id"],
+                    },
+                    {
                         model: db.Messages,
                         as: "messages",
                         order: [["createdAt", "DESC"]],
+                        limit: 1,
                     },
                     {
                         model: db.Users,
@@ -135,17 +205,105 @@ export const getConversationByUserId = async (userId) => {
                         },
                     },
                 ],
+                order: [["updatedAt", "ASC"]],
             },
         })
-
         return {
-            conversations: conversations,
+            chats: conversations,
             errorCode: 0,
             message: "Ok",
         }
     } catch (error) {
+        console.log(error)
         return {
             message: "Failed to get conversations",
+            errorCode: 2,
+            errorMessage: error.message,
+        }
+    }
+}
+export const getChatById = async ({ conversationId, userId }) => {
+    try {
+        const chat = await db.Conversations.findByPk(conversationId, {
+            include: [
+                {
+                    model: db.Users,
+                    as: "hid_user",
+                    through: { attributes: [] },
+                    attributes: ["id"],
+                },
+                {
+                    model: db.Messages,
+                    as: "messages",
+                    order: [["createdAt", "DESC"]],
+                    limit: 20,
+                },
+                {
+                    model: db.Users,
+                    as: "chatMembers",
+                    through: { attributes: [] },
+                },
+
+                {
+                    model: db.Posts,
+                    as: "post",
+                    attributes: ["title", "price", "post_url"],
+                    include: {
+                        model: db.Images,
+                        as: "images",
+                    },
+                },
+            ],
+        })
+
+        if (!chat) {
+            return {
+                errorCode: 1,
+                errorMessage: "CHAT NOT FOUND",
+            }
+        }
+        const filteredMessages = await chat.messages.filter(
+            (message) =>
+                !(
+                    (message.is_hidden_by_owner &&
+                        message.user_id === +userId) ||
+                    (message.is_hidden_by_another &&
+                        message.user_id !== +userId)
+                )
+        )
+
+        chat.dataValues.messages = filteredMessages
+
+        return {
+            chat: chat,
+            errorCode: 0,
+            message: "ok",
+        }
+    } catch (error) {
+        return {
+            errorCode: 2,
+            errorMessage: error.message,
+        }
+    }
+}
+
+export const getMoreMessagesById = async ({ chatId, offset }) => {
+    try {
+        const messages = await db.Messages.findAll({
+            where: {
+                conversation_id: chatId,
+            },
+            order: [["createdAt", "DESC"]],
+            offset: offset,
+            limit: 10,
+        })
+        return {
+            messages: messages,
+            errorCode: 0,
+            message: "OK",
+        }
+    } catch (error) {
+        return {
             errorCode: 2,
             errorMessage: error.message,
         }
@@ -161,7 +319,7 @@ export const updateMessage = async (newMessage, messageId) => {
                 id: messageId,
             },
         })
-        console.log(">>> Update result: ", updateResult)
+        // console.log(">>> Update result: ", updateResult)
 
         // get updated mesage
         const message = await db.Messages.findOne({
@@ -176,7 +334,45 @@ export const updateMessage = async (newMessage, messageId) => {
             message: "Ok",
         }
     } catch (error) {
-        console.log("Error at addMessage: ", error.message)
+        console.log("Error at updateMessage: ", error.message)
+        return {
+            message: "Failed to update message",
+            errorCode: 2,
+            errorMessage: error.message,
+        }
+    }
+}
+export const updateMessageReadByAnother = async (
+    newMessage,
+    messageId,
+    userId
+) => {
+    try {
+        // do update
+        const updateResult = await db.Messages.update(newMessage, {
+            where: {
+                id: messageId,
+                user_id: {
+                    [Op.ne]: userId,
+                },
+            },
+        })
+        // console.log(">>> Update result: ", updateResult)
+
+        // get updated mesage
+        const message = await db.Messages.findOne({
+            where: {
+                id: messageId,
+            },
+        })
+
+        return {
+            messageData: message.get(),
+            errorCode: 0,
+            message: "Ok",
+        }
+    } catch (error) {
+        console.log("Error at updateMessageReadByAnother: ", error.message)
         return {
             message: "Failed to update message",
             errorCode: 2,
@@ -186,23 +382,151 @@ export const updateMessage = async (newMessage, messageId) => {
 }
 
 /**DELETE */
-export const deleteMessage = async (messageId) => {
+export const hideMessageByOwner = async ({
+    userId,
+    messageId,
+    conversationId,
+}) => {
     try {
-        const deletingResult = await db.Messages.destroy({
-            where: {
-                id: messageId,
+        const deletingResult = await db.Messages.update(
+            {
+                is_hidden_by_owner: true,
             },
-        })
-        console.log(">>> Deleting Result", deletingResult)
-
+            {
+                where: {
+                    id: messageId,
+                },
+            }
+        )
+        // console.log(">>> Deleting Result", deletingResult)
         return {
-            message: "Delete message successfully!",
+            message: "hide message successfully!",
             errorCode: 0,
         }
     } catch (error) {
-        console.log("Error at deleteMessage: ", error.message)
+        console.log("Error at hideMessageByOwner: ", error.message)
         return {
             message: "Failed to delte message",
+            errorCode: 2,
+            errorMessage: error.message,
+        }
+    }
+}
+
+export const hideMessageByAnother = async ({
+    userId,
+    messageId,
+    conversationId,
+}) => {
+    try {
+        const deletingResult = await db.Messages.update(
+            {
+                is_hidden_by_another: true,
+            },
+            {
+                where: {
+                    id: messageId,
+                },
+            }
+        )
+
+        return {
+            message: "hide message successfully!",
+            errorCode: 0,
+        }
+    } catch (error) {
+        console.log("Error at hideMessageByAnother: ", error.message)
+        return {
+            message: "Failed to delte message",
+            errorCode: 2,
+            errorMessage: error.message,
+        }
+    }
+}
+
+export const deleteMessageById = async ({
+    userId,
+    messageId,
+    conversationId,
+}) => {
+    try {
+        const deletingResult = await db.Messages.update(
+            {
+                is_deleted: true,
+            },
+            {
+                where: {
+                    id: messageId,
+                },
+            }
+        )
+        return {
+            message: "delete message successfully!",
+            errorCode: 0,
+        }
+    } catch (error) {
+        console.log("Error at hideMessageByAnother: ", error.message)
+        return {
+            message: "Failed to delte message",
+            errorCode: 2,
+            errorMessage: error.message,
+        }
+    }
+}
+export const deleteChatByUserId = async ({ conversation_id, user_id }) => {
+    try {
+        await db.Conversations.update(
+            {
+                is_hidden: true,
+            },
+            {
+                where: {
+                    id: conversation_id,
+                },
+            }
+        )
+        await db.Conversations_Hid_Users.create({
+            conversation_id,
+            user_id,
+        })
+        await db.Messages.update(
+            { is_hidden_by_owner: true },
+            {
+                where: {
+                    conversation_id: conversation_id,
+                    user_id: user_id,
+                },
+            }
+        )
+
+        await db.Messages.update(
+            { is_hidden_by_another: true },
+            {
+                where: {
+                    conversation_id: conversation_id,
+                    user_id: {
+                        [Op.ne]: user_id,
+                    },
+                },
+            }
+        )
+
+        await db.Conversations.update(
+            {},
+            {
+                where: {
+                    id: conversation_id,
+                },
+            }
+        )
+        return {
+            errorCode: 0,
+            message: "hide message successfully!",
+        }
+    } catch (error) {
+        console.log("Error at deleteChatByUserId: ", error.message)
+        return {
+            message: "Failed to update message",
             errorCode: 2,
             errorMessage: error.message,
         }

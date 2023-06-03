@@ -1,7 +1,6 @@
 "use strict"
-const { Model, Deferrable } = require("sequelize")
-import User from "./user"
-import Post from "./post"
+const { Model } = require("sequelize")
+import db from "./index"
 
 module.exports = (sequelize, DataTypes) => {
     class Message extends Model {
@@ -20,6 +19,10 @@ module.exports = (sequelize, DataTypes) => {
             Message.belongsTo(models.Users, {
                 foreignKey: "user_id",
                 as: "user",
+            })
+            Message.hasOne(models.Messages, {
+                foreignKey: "replied_message_id",
+                as: "repliedMessage",
             })
         }
     }
@@ -48,6 +51,29 @@ module.exports = (sequelize, DataTypes) => {
             },
             conversation_id: {
                 type: DataTypes.INTEGER,
+                allowNull: false,
+            },
+            replied_message_id: {
+                type: DataTypes.INTEGER,
+                allowNull: true,
+            },
+            is_read_by_another: {
+                type: DataTypes.BOOLEAN,
+                defaultValue: false,
+            },
+            is_deleted: {
+                type: DataTypes.BOOLEAN,
+                defaultValue: false,
+                allowNull: false,
+            },
+            is_hidden_by_owner: {
+                type: DataTypes.BOOLEAN,
+                defaultValue: false,
+                allowNull: false,
+            },
+            is_hidden_by_another: {
+                type: DataTypes.BOOLEAN,
+                defaultValue: false,
                 allowNull: false,
             },
         },
