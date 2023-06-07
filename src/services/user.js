@@ -7,7 +7,7 @@ export const savePost = async ({ userId, postId }) => {
     const user_id = userId
     const post_id = postId
     const newSavedPost = { user_id, post_id }
-    console.log("=>newSavedPost", newSavedPost)
+    // console.log("=>newSavedPost", newSavedPost)
     try {
         const savedPostExisted = await db.SavedPosts.findOne({
             where: {
@@ -15,7 +15,7 @@ export const savePost = async ({ userId, postId }) => {
                 user_id: user_id,
             },
         })
-        console.log("=>savedPostExisted", savedPostExisted)
+        // console.log("=>savedPostExisted", savedPostExisted)
 
         if (savedPostExisted) {
             return {
@@ -24,7 +24,7 @@ export const savePost = async ({ userId, postId }) => {
         }
 
         const savedPost = await db.SavedPosts.create(newSavedPost)
-        console.log("=>savedPost", savedPost)
+        // console.log("=>savedPost", savedPost)
 
         const createdSavedPost = await db.SavedPosts.findByPk(
             savedPost.dataValues.id,
@@ -159,6 +159,7 @@ export const getSavedPostsByUserId = async (userId) => {
                     as: "images",
                 },
             },
+            order: [["createdAt", "DESC"]],
         })
         return {
             savedPosts: savedPosts,
@@ -231,6 +232,15 @@ export const deleteSavedPost = async ({ userId, postId }) => {
             where: {
                 user_id: userId,
             },
+            include: {
+                model: db.Posts,
+                as: "post",
+                include: {
+                    model: db.Images,
+                    as: "images",
+                },
+            },
+            order: [["createdAt", "DESC"]],
         })
 
         return {
@@ -456,7 +466,7 @@ export const updateStatus = async (userId) => {
 
 export const addRelationShip = async (userId, otherUserId) => {
     const newRelationship = { follower: userId, followedUser: otherUserId }
-    console.log(newRelationship)
+    // console.log(newRelationship)
     try {
         const checkRelationship = await db.Relationships.findOne({
             where: {

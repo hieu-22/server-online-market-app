@@ -124,7 +124,6 @@ const applyWebSocket = (server) => {
 
                 getChats(null, data)
             } catch (error) {
-                console.log(error)
                 getChats(error)
             }
         })
@@ -185,7 +184,10 @@ const applyWebSocket = (server) => {
                         conversationId,
                         userId,
                     })
-                    if (response.errorCode === 1) {
+                    if (response.statusCode === 404) {
+                        return getMessages(response)
+                    }
+                    if (response.statusCode === 403) {
                         return getMessages(response)
                     }
                     if (response.errorCode === 2) {
