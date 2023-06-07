@@ -53,6 +53,24 @@ export const addConversationByPost = async ({ userId, postId }) => {
         }
 
         if (conversationExisted) {
+            const delRes = await db.Conversations_Hid_Users.destroy({
+                where: {
+                    [Op.and]: [
+                        { conversation_id: existedConversationId },
+                        { user_id: userId },
+                    ],
+                },
+            })
+            const updateRes = await db.Conversations.update(
+                {
+                    is_hidden: false,
+                },
+                {
+                    where: {
+                        id: existedConversationId,
+                    },
+                }
+            )
             return {
                 chatId: existedConversationId,
                 errorCode: 1,
@@ -75,39 +93,35 @@ export const addConversationByPost = async ({ userId, postId }) => {
         )
 
         const Chat = await db.Conversations.findByPk(conversationId, {
-            include: {
-                model: db.Conversations,
-                as: "conversation",
-                include: [
-                    {
-                        model: db.Users,
-                        as: "hid_user",
-                        through: { attributes: [] },
-                        attributes: ["id"],
-                    },
-                    {
-                        model: db.Messages,
-                        as: "messages",
-                        order: [["createdAt", "DESC"]],
-                    },
-                    {
-                        model: db.Users,
-                        as: "chatMembers",
-                        through: { attributes: [] },
-                    },
+            include: [
+                {
+                    model: db.Users,
+                    as: "hid_user",
+                    through: { attributes: [] },
+                    attributes: ["id"],
+                },
+                {
+                    model: db.Messages,
+                    as: "messages",
+                    order: [["createdAt", "DESC"]],
+                },
+                {
+                    model: db.Users,
+                    as: "chatMembers",
+                    through: { attributes: [] },
+                },
 
-                    {
-                        model: db.Posts,
-                        as: "post",
-                        attributes: ["title", "price", "post_url"],
-                        include: {
-                            model: db.Images,
-                            as: "images",
-                        },
+                {
+                    model: db.Posts,
+                    as: "post",
+                    attributes: ["title", "price", "post_url"],
+                    include: {
+                        model: db.Images,
+                        as: "images",
                     },
-                ],
-                order: [],
-            },
+                },
+            ],
+            order: [],
         })
         return {
             chat: Chat,
@@ -115,7 +129,7 @@ export const addConversationByPost = async ({ userId, postId }) => {
             message: "Create conversation successfully!",
         }
     } catch (error) {
-        console.log("ERROR at addConversation: ", error.message)
+        // console.log("ERROR at addConversation: ", error.message)
         return {
             errorCode: 2,
             message: "Failed to create chat!",
@@ -224,6 +238,13 @@ export const getConversationByUserId = async ({ userId }) => {
 }
 export const getChatById = async ({ conversationId, userId }) => {
     try {
+        const chatUserRelation = await db.User_Conversation.findAll({
+            where: {
+                conversation_id: conversationId,
+                user_id: userId,
+            },
+        })
+        // console.log("check: ", chatUserRelation)
         const chat = await db.Conversations.findByPk(conversationId, {
             include: [
                 {
@@ -258,10 +279,18 @@ export const getChatById = async ({ conversationId, userId }) => {
 
         if (!chat) {
             return {
-                errorCode: 1,
-                errorMessage: "CHAT NOT FOUND",
+                statusCode: 404,
+                message: "CHAT NOT FOUND",
             }
         }
+
+        if (chatUserRelation.length === 0 && Boolean(chat)) {
+            return {
+                statusCode: 403,
+                message: "Access Denied",
+            }
+        }
+
         const filteredMessages = await chat.messages.filter(
             (message) =>
                 !(

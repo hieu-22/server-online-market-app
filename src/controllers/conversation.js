@@ -57,6 +57,10 @@ export const handleAddConversationByPost = async (req, res) => {
         if (responses.message === "CHAT ALREADY EXISTED") {
             return res.status(200).json(responses)
         }
+
+        if (responses.errorCode === 2) {
+            return res.status(500).json(responses)
+        }
         res.status(200).json(responses)
     } catch (error) {
         console.log(`Error at handleAddConversation: ${error.message}`)
