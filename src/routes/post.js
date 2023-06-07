@@ -51,30 +51,10 @@ router.get("/posts/first", handleGetPosts)
 router.get("/posts/next", handleGetNextPosts)
 router.get("/posts/getByUserId", handleGetPostsByUserId)
 router.get("/posts/search", handleSearchPosts)
-router.get(
-    "/posts/:post_url",
-    handleGetPostByUrl,
-    handleGetImageUrl,
-    (req, res) => {
-        const post = req.post
-        const imageUrls = req.imageUrls
-        const message = req.message
-        try {
-            res.status(200).json({ post, imageUrls, message })
-        } catch (error) {
-            console.error(
-                `Error at the last middleware in route "/posts/:post_url": ${error.message}`
-            )
-            res.status(500).json({
-                error: error,
-                message: "Internal server error",
-            })
-        }
-    }
-)
+router.get("/posts/:post_url", handleGetPostByUrl)
 /*UPDATE */
 // update post and image
-router.patch("/posts/:postId/update", upload.array("images"), handleUpdatePost)
+router.patch("/posts/:postId/update", handleUpdatePost)
 
 /*DELETE POST */
 router.delete("/posts/:postId/delete", handleDeletePost)

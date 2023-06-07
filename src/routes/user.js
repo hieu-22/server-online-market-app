@@ -30,9 +30,21 @@ router.get("/user/relationships/followers", verifyToken, handleGetFollowers)
 /**UPDATE */
 router.patch("/user/:id/update-user-information", verifyToken, handleUpdateUser)
 router.patch(
-    "/user/:id/update-avatar",
-    // verifyToken,
-    upload.single("avatar"),
+    "/user/:id/changeAvatar",
+    upload.array("avatar"),
+    (error, req, res, next) => {
+        if (error instanceof multer.MulterError) {
+            // Handle Multer-specific errors
+            return res.status(400).json({ error: err.message })
+        } else if (error) {
+            // Handle other errors
+            return res
+                .status(500)
+                .json({ error: "An unexpected error occurred" })
+        }
+        // If no errors occurred, proceed to the next middleware
+        next()
+    },
     handleUpdateAvatar
 )
 router.patch("/user/:id/update-password", verifyToken, handleUpdatePassword)

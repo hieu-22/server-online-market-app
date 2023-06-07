@@ -41,6 +41,7 @@ const applyWebSocket = (server) => {
             activeSockets.set(socket.id, userId)
             await socket.join(userId)
             activateUserOnlineStatus(userId)
+            io.to(userId).emit("updateIsOnline")
             // console.log("connected activeSockets: ", activeSockets)
         })
 

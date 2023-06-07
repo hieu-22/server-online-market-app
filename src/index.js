@@ -12,15 +12,14 @@ const app = express()
 commonConfig(app)
 const PORT = process.env.PORT || 5001
 const server = createServer(app)
-
-/**WEBSOCKET */
-applyWebSocket(server)
-
 /**Routes */
 app.use("/api", auth)
 app.use("/api", user)
 app.use("/api", post)
 app.use("/api", conversation)
+
+/**WEBSOCKET */
+applyWebSocket(server)
 
 /**App listening */
 server.listen(PORT, () => {

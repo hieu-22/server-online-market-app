@@ -183,8 +183,7 @@ export const handleGetPostByUrl = async (req, res, next) => {
             return
         }
 
-        req.post = response
-        next()
+        res.status(200).json(response)
     } catch (error) {
         console.error(`Error in handleGetPostByUrl: ${error.message}`)
         res.status(500).json({
@@ -216,13 +215,26 @@ export const handleGetImageUrl = async (req, res, next) => {
 }
 // update post information and post images
 export const handleUpdatePost = async (req, res) => {
-    const newPost = req.body
-    const images = req.files // new images
+    const { title, price, product_condition, description, address, images } =
+        req.body
+    const newPost = {
+        title,
+        price,
+        product_condition,
+        description,
+        address,
+    }
+
     const postId = req.params.postId
-    const imageIds = newPost.imageIds
     try {
-        const responses = await updatePost(newPost, images, postId, imageIds)
-        //FindImages - destroy old images that want to update > update imageUrl by id
+        const responses = await updatePost({
+            newPost,
+            images: JSON.parse(images),
+            postId,
+        })
+        if (responses.errorCode === 2) {
+            return res.status(500).json(responses)
+        }
         res.status(200).json(responses)
     } catch (error) {
         console.error(`Error in handleUpdatePost: ${error.message}`)

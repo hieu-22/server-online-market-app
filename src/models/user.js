@@ -80,6 +80,10 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.BOOLEAN,
                 defaultValue: false,
             },
+            introduction: {
+                type: DataTypes.TEXT,
+                defaultValue: "",
+            },
         },
         {
             sequelize,

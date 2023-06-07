@@ -15,6 +15,7 @@ import {
 } from "../services/user"
 import { myCloudinary as cloudinary } from "../middleware/cloudinaryUploader"
 import { deletePost } from "../services/post"
+import { run } from "@babel/core/lib/transformation"
 
 /**CREATE */
 export const handleSavePost = async (req, res) => {
@@ -96,7 +97,7 @@ export const handleAddRelationship = async (req, res) => {
     }
 }
 
-export const handleUpdateUser = async (error, req, res, next) => {
+export const handleUpdateUser = async (req, res, next) => {
     const id = req.params.id
     const updatedInformation = req.body
     try {
@@ -117,14 +118,9 @@ export const handleUpdateUser = async (error, req, res, next) => {
     }
 }
 
-export const handleUpdateAvatar = async (err, req, res, next) => {
-    // handle error of the previous middleware
-    if (err) {
-        console.log(`Error at Upload.single: ${JSON.stringify(err)}`)
-        return res.status(400).json(err)
-    }
-
-    const avatarUrl = req.file.path
+export const handleUpdateAvatar = async (req, res, next) => {
+    console.log("run")
+    const avatarUrl = req.files[0].path
     const userId = req.params.id
     try {
         const responses = await updateAvatar({ userId, avatarUrl })
