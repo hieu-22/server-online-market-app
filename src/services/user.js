@@ -256,12 +256,26 @@ export const deleteSavedPost = async ({ userId, postId }) => {
     }
 }
 export const updateUser = async ({ id, updatedInformation }) => {
+    const { phoneNumber } = updatedInformation
     try {
         const user = await db.Users.findByPk(id)
         if (!user) {
             return {
                 errorCode: 1,
                 message: "User not found",
+            }
+        }
+
+        const phoneNumberExisted = await db.Users.findOne({
+            where: {
+                phoneNumber: phoneNumber,
+            },
+        })
+
+        if (phoneNumberExisted) {
+            return {
+                message: "Số điện thoại đã được sử dụng!",
+                errorCode: "CONFLICT",
             }
         }
 
@@ -276,14 +290,6 @@ export const updateUser = async ({ id, updatedInformation }) => {
                 exclude: ["password"],
             },
             include: [
-                {
-                    model: db.Posts,
-                    as: "savedPosts",
-                    include: {
-                        model: db.Images,
-                        as: "images",
-                    },
-                },
                 {
                     model: db.Posts,
                     as: "posts",

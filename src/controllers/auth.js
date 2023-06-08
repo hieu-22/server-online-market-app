@@ -7,22 +7,19 @@ import { login } from "../services/auth"
 export const handleRegister = async (req, res) => {
     try {
         const { userAccount, password } = req.body
-        const userName = userAccount.split("@")[0]
+        const defaultUserName = userAccount.split("@")[0]
         const newUser = {
             email: userAccount,
             password: password,
-            userName: userName,
+            userName: defaultUserName,
         }
         const checkUserExisted = await db.Users.findOne({
             where: {
-                [Op.or]: {
-                    email: userAccount,
-                    phoneNumber: userAccount,
-                },
+                email: userAccount,
             },
         })
         if (checkUserExisted) {
-            res.status(200).json({
+            res.status(409).json({
                 message: "User already existed, please try another!",
             })
             return
@@ -32,17 +29,16 @@ export const handleRegister = async (req, res) => {
         await db.Users.create(newUser)
 
         const user = await db.Users.findOne({
-            attributes: { exclude: ["password", "createdAt", "updatedAt"] },
+            attributes: { exclude: ["password"] },
             where: {
-                [Op.or]: {
-                    email: userAccount,
-                    phoneNumber: userAccount,
-                },
+                email: userAccount,
             },
         })
 
         // token
-        const token = jwt.sign({ ...user }, process.env.JWT_SECRET_KEY, {
+        const { id, email, userName } = user
+        const tokenPayload = { id, email, userName }
+        const token = jwt.sign(tokenPayload, process.env.JWT_SECRET_KEY, {
             expiresIn: "24h",
         })
 

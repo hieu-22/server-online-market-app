@@ -107,6 +107,9 @@ export const handleUpdateUser = async (req, res, next) => {
             return
         }
 
+        if (responses.errorCode === "CONFLICT") {
+            return res.status(409).json({ message: responses.message })
+        }
         if (responses.errorCode === 2) {
             res.status(500).json(responses)
             return
