@@ -351,11 +351,21 @@ export const updateUser = async ({ id, updatedInformation }) => {
                 },
                 {
                     model: db.Relationships,
-                    as: "followingUsers",
+                    as: "followers",
+                    attributes: ["follower"],
+                    include: {
+                        model: db.Users,
+                        as: "followerInfo",
+                    },
                 },
                 {
                     model: db.Relationships,
-                    as: "followers",
+                    as: "followingUsers",
+                    attributes: ["followedUser"],
+                    include: {
+                        model: db.Users,
+                        as: "followedUserInfo",
+                    },
                 },
             ],
         })
@@ -487,10 +497,20 @@ export const getUserById = async (id) => {
                 {
                     model: db.Relationships,
                     as: "followers",
+                    attributes: ["follower"],
+                    include: {
+                        model: db.Users,
+                        as: "followerInfo",
+                    },
                 },
                 {
                     model: db.Relationships,
                     as: "followingUsers",
+                    attributes: ["followedUser"],
+                    include: {
+                        model: db.Users,
+                        as: "followedUserInfo",
+                    },
                 },
             ],
         })
