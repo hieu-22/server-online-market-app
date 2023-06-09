@@ -169,21 +169,22 @@ export const getOtherUsers = async (userId) => {
         const checkIds = await FollowedUserIds.map((item) => {
             return item.followedUser
         })
-        await checkIds.unshift(userId)
-        const notFollowedUsers = await db.Users.findAll({
+
+        checkIds.push(+userId)
+        console.log(checkIds)
+        const nonFollowedUsers = await db.Users.findAll({
             where: {
                 id: {
-                    [Op.not]: {
-                        [Op.in]: checkIds,
-                    },
+                    [Op.notIn]: checkIds,
                 },
             },
+            logging: console.log,
         })
 
         return {
             users: {
                 followedUsers,
-                notFollowedUsers,
+                nonFollowedUsers,
             },
             message: "OK",
         }
