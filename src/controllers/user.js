@@ -12,6 +12,7 @@ import {
     savePost,
     getSavedPostsByUserId,
     deleteSavedPost,
+    getOtherUsers,
 } from "../services/user"
 import { myCloudinary as cloudinary } from "../middleware/cloudinaryUploader"
 import { deletePost } from "../services/post"
@@ -39,7 +40,17 @@ export const handleSavePost = async (req, res) => {
         res.status(500).json({ Error: error, message: "Internal Server Error" })
     }
 }
-
+/**READ */
+export const handleGetOtherUsers = async (req, res) => {
+    const { userId } = req.query
+    try {
+        const response = await getOtherUsers(userId)
+        res.status(200).json(response)
+    } catch (error) {
+        console.log(`Error at handleGetOtherUsers: ${error.message}`)
+        res.status(500).json({ Error: error, message: "Internal Server Error" })
+    }
+}
 /**UPDATE */
 export const handleGetSavedPostsByUserId = async (req, res) => {
     const userId = req.query.userId

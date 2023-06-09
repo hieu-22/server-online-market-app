@@ -1,6 +1,7 @@
 import db from "../models/index"
 import bcrypt from "bcrypt"
 import { Op, where } from "sequelize"
+import sequelize from "sequelize"
 
 /**CREATE */
 export const savePost = async ({ userId, postId }) => {
@@ -141,6 +142,56 @@ export const getAllFollowers = async (userId) => {
             followers: "fail to load",
             errorCode: 1,
             message: error.message,
+        }
+    }
+}
+
+export const getOtherUsers = async (userId) => {
+    try {
+        // get not yet followed users by current user
+        const FollowedUserIds = await db.Relationships.findAll({
+            attributes: ["followedUser"],
+            where: {
+                follower: userId,
+            },
+            include: {
+                model: db.Users,
+                as: "followedUserInfo",
+            },
+        })
+
+        // to get the followed users
+        const followedUsers = await FollowedUserIds.map((item) => {
+            return item.followedUserInfo
+        })
+
+        // to get the not yet followed users
+        const checkIds = await FollowedUserIds.map((item) => {
+            return item.followedUser
+        })
+        await checkIds.unshift(userId)
+        const notFollowedUsers = await db.Users.findAll({
+            where: {
+                id: {
+                    [Op.not]: {
+                        [Op.in]: checkIds,
+                    },
+                },
+            },
+        })
+
+        return {
+            users: {
+                followedUsers,
+                notFollowedUsers,
+            },
+            message: "OK",
+        }
+    } catch (error) {
+        console.log("Error at getOtherUsers: ", error)
+        return {
+            errorCode: 2,
+            message: error.query,
         }
     }
 }

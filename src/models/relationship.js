@@ -12,11 +12,11 @@ module.exports = (sequelize, DataTypes) => {
             // define association here
             Relationship.belongsTo(models.Users, {
                 foreignKey: "followedUser",
-                as: "followers",
+                as: "followedUserInfo",
             })
             Relationship.belongsTo(models.Users, {
                 foreignKey: "follower",
-                as: "followingUsers",
+                as: "followerInfo",
             })
         }
     }
