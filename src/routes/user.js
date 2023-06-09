@@ -31,7 +31,7 @@ router.get("/user/relationships/followers", verifyToken, handleGetFollowers)
 router.get("/user/:id", handleGetUserById)
 
 /**UPDATE */
-router.patch("/user/:id/update-user-information", handleUpdateUser) // verifyToken,
+router.patch("/user/:id/update-user-information", verifyToken, handleUpdateUser)
 router.patch(
     "/user/:id/changeAvatar",
     upload.array("avatar"),

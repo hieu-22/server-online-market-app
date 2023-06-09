@@ -349,6 +349,14 @@ export const updateUser = async ({ id, updatedInformation }) => {
                         as: "images",
                     },
                 },
+                {
+                    model: db.Relationships,
+                    as: "followingUsers",
+                },
+                {
+                    model: db.Relationships,
+                    as: "followers",
+                },
             ],
         })
 
@@ -467,14 +475,24 @@ export const getUserById = async (id) => {
             attributes: {
                 exclude: ["password"],
             },
-            include: {
-                model: db.Posts,
-                as: "posts",
-                include: {
-                    model: db.Images,
-                    as: "images",
+            include: [
+                {
+                    model: db.Posts,
+                    as: "posts",
+                    include: {
+                        model: db.Images,
+                        as: "images",
+                    },
                 },
-            },
+                {
+                    model: db.Relationships,
+                    as: "followers",
+                },
+                {
+                    model: db.Relationships,
+                    as: "followingUsers",
+                },
+            ],
         })
         if (!user) {
             return {

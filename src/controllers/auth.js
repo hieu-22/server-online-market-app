@@ -33,6 +33,24 @@ export const handleRegister = async (req, res) => {
             where: {
                 email: userAccount,
             },
+            include: [
+                {
+                    model: db.Posts,
+                    as: "posts",
+                    include: {
+                        model: db.Images,
+                        as: "images",
+                    },
+                },
+                {
+                    model: db.Relationships,
+                    as: "followingUsers",
+                },
+                {
+                    model: db.Relationships,
+                    as: "followers",
+                },
+            ],
         })
 
         // token
