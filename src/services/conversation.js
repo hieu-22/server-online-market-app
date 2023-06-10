@@ -1,5 +1,5 @@
 import db from "../models/index"
-import { Op } from "sequelize"
+import { Op, where } from "sequelize"
 /**CREATE */
 export const addConversationByPost = async ({ userId, postId }) => {
     try {
@@ -87,6 +87,133 @@ export const addConversationByPost = async ({ userId, postId }) => {
         const newChatMembers = [
             { conversation_id: conversationId, user_id: userId },
             { conversation_id: conversationId, user_id: postUserId },
+        ]
+        const conversationMembers = await db.User_Conversation.bulkCreate(
+            newChatMembers
+        )
+
+        const Chat = await db.Conversations.findByPk(conversationId, {
+            include: [
+                {
+                    model: db.Users,
+                    as: "hid_user",
+                    through: { attributes: [] },
+                    attributes: ["id"],
+                },
+                {
+                    model: db.Messages,
+                    as: "messages",
+                    order: [["createdAt", "DESC"]],
+                },
+                {
+                    model: db.Users,
+                    as: "chatMembers",
+                    through: { attributes: [] },
+                },
+
+                {
+                    model: db.Posts,
+                    as: "post",
+                    attributes: ["title", "price", "post_url"],
+                    include: {
+                        model: db.Images,
+                        as: "images",
+                    },
+                },
+            ],
+            order: [],
+        })
+        return {
+            chat: Chat,
+            errorCode: 0,
+            message: "Create conversation successfully!",
+        }
+    } catch (error) {
+        // console.log("ERROR at addConversation: ", error.message)
+        return {
+            errorCode: 2,
+            message: "Failed to create chat!",
+            errorMessage: error.message,
+        }
+    }
+}
+
+export const addConversationByUser = async ({ userId, otherUserId }) => {
+    try {
+        // check if the conversations between the two user is existed or not
+        // -- find where post_id is null
+        const existedConversations = await db.Conversations.findAll({
+            where: {
+                post_id: null,
+            },
+            include: {
+                model: db.Users,
+                as: "chatMembers",
+                through: { attributes: ["user_id"] },
+            },
+        })
+        let conversationExisted = false
+        let existedConversationId
+        // -- check each chatMembers of each post is match with user_conversations
+        for (let i = 0; i < existedConversations.length; i++) {
+            // console.log(
+            //     "=> At i =",
+            //     i,
+            //     " :",
+            //     existedConversations[i].chatMembers[0].User_Conversation
+            //         .user_id,
+            //     "and userId: ",
+            //     userId
+            // )
+            const checkUserId = existedConversations[i].chatMembers.some(
+                (member) => member.User_Conversation.user_id === +userId
+            )
+
+            const checkOtherUserId = existedConversations[i].chatMembers.some(
+                (member) => member.User_Conversation.user_id === +otherUserId
+            )
+            // console.log("conversationExisted: ", chatUserId)
+            if (checkUserId && checkOtherUserId) {
+                conversationExisted = true
+                existedConversationId = existedConversations[i].id
+                break
+            }
+        }
+        if (conversationExisted) {
+            const delRes = await db.Conversations_Hid_Users.destroy({
+                where: {
+                    [Op.and]: [
+                        { conversation_id: existedConversationId },
+                        { user_id: userId },
+                    ],
+                },
+            })
+            const updateRes = await db.Conversations.update(
+                {
+                    is_hidden: false,
+                },
+                {
+                    where: {
+                        id: existedConversationId,
+                    },
+                }
+            )
+            return {
+                chatId: existedConversationId,
+                errorCode: 1,
+                message: "CHAT ALREADY EXISTED",
+            }
+        }
+        // -------------------------------------------------
+        /**CHAT DOESN'T EXIST */
+        // Create conversation
+        const result = await db.Conversations.create({})
+        // console.log("--- Creating result: ", result)
+        const conversationId = result.dataValues.id
+        // --create user_conversation
+        const newChatMembers = [
+            { conversation_id: conversationId, user_id: userId },
+            { conversation_id: conversationId, user_id: otherUserId },
         ]
         const conversationMembers = await db.User_Conversation.bulkCreate(
             newChatMembers

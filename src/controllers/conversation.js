@@ -6,6 +6,7 @@ import {
     addConversationByPost,
     updateMessage,
     deleteChatByUserId,
+    addConversationByUser,
 } from "../services/conversation"
 
 export const handleGetMessagesByConversationId = async (req, res) => {
@@ -50,6 +51,30 @@ export const handleAddConversationByPost = async (req, res) => {
     const { userId, postId } = req.query
     try {
         const responses = await addConversationByPost({ userId, postId })
+        if (responses.message === "POST NOT FOUND") {
+            return res.status(404).json(responses)
+        }
+
+        if (responses.message === "CHAT ALREADY EXISTED") {
+            return res.status(200).json(responses)
+        }
+
+        if (responses.errorCode === 2) {
+            return res.status(500).json(responses)
+        }
+        res.status(200).json(responses)
+    } catch (error) {
+        console.log(`Error at handleAddConversation: ${error.message}`)
+        res.status(500).json({
+            message: "Internal Server Error",
+        })
+    }
+}
+
+export const handleAddConversationByUser = async (req, res) => {
+    const { userId, otherUserId } = req.query
+    try {
+        const responses = await addConversationByUser({ userId, otherUserId })
         if (responses.message === "POST NOT FOUND") {
             return res.status(404).json(responses)
         }

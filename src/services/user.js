@@ -592,18 +592,25 @@ export const addRelationShip = async (userId, otherUserId) => {
 
 export const removeRelationShip = async (userId, otherUserId) => {
     try {
-        const checkRelationship = await db.Relationships.destroy({
+        const checkRelationship = await db.Relationships.findOne({
             where: {
                 [Op.and]: [{ follower: userId }, { followedUser: otherUserId }],
             },
         })
-
+        console.log(">>> checkRelationship ", checkRelationship?.dataValues.id)
         if (!checkRelationship) {
             return {
                 errorCode: 1,
                 message: "RELATIONSHIP NOT FOUND",
             }
         }
+
+        const deleteRes = await db.Relationships.destroy({
+            where: {
+                [Op.and]: [{ follower: userId }, { followedUser: otherUserId }],
+            },
+        })
+        console.log(">>> deleteRes ", deleteRes)
 
         return {
             errorCode: 0,

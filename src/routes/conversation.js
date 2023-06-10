@@ -7,6 +7,7 @@ import {
     handleUpdateMessage,
     handleDeleteMessage,
     handleDeleteChatByUserId,
+    handleAddConversationByUser,
 } from "../controllers/conversation"
 
 const router = express.Router()
@@ -14,6 +15,7 @@ const router = express.Router()
 /**CREATE */
 // router.post("/messages/create", handleAddMessage)
 router.post("/conversations/create", handleAddConversationByPost)
+router.post("/conversations/createByUserId", handleAddConversationByUser)
 // /**READ */
 // router.get(
 //     "/conversation/:conversationId/messages",
