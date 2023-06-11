@@ -13,6 +13,7 @@ import {
     handleGetSavedPostsByUserId,
     handleDeleteSavedPost,
     handleGetOtherUsers,
+    handleGetRelativeUsers,
 } from "../controllers/user"
 import upload from "../middleware/cloudinaryUploader"
 import { verifyToken } from "../middleware/verifyToken"
@@ -28,6 +29,7 @@ router.get("/user/get-other-users", handleGetOtherUsers)
 router.get("/user/get-saved-posts", handleGetSavedPostsByUserId)
 router.get("/user/relationships/followings", verifyToken, handleGetFollowing)
 router.get("/user/relationships/followers", verifyToken, handleGetFollowers)
+router.get("/user/:userId/get-relative-users", handleGetRelativeUsers)
 router.get("/user/:id", handleGetUserById)
 
 /**UPDATE */

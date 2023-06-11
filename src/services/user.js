@@ -197,6 +197,60 @@ export const getOtherUsers = async (userId) => {
     }
 }
 
+export const getRelativeUsers = async (userId) => {
+    try {
+        // get not yet followed users by current user
+        const followedUserIds = await db.Relationships.findAll({
+            attributes: ["followedUser"],
+            where: {
+                follower: userId,
+            },
+            include: [
+                {
+                    model: db.Users,
+                    as: "followedUserInfo",
+                },
+            ],
+        })
+
+        const followerIds = await db.Relationships.findAll({
+            attributes: ["followedUser"],
+            where: {
+                followedUser: userId,
+            },
+            include: [
+                {
+                    model: db.Users,
+                    as: "followerInfo",
+                },
+            ],
+        })
+
+        // to get the followed users
+        const followingUsers = await followedUserIds.map((item) => {
+            return item.followedUserInfo
+        })
+
+        const followers = await followerIds.map((item) => {
+            return item.followerInfo
+        })
+
+        return {
+            users: {
+                followingUsers,
+                followers,
+            },
+            message: "OK",
+        }
+    } catch (error) {
+        console.log("Error at getOtherUsers: ", error)
+        return {
+            errorCode: 2,
+            message: error.query,
+        }
+    }
+}
+
 export const getSavedPostsByUserId = async (userId) => {
     try {
         const savedPosts = await db.SavedPosts.findAll({
@@ -598,6 +652,7 @@ export const removeRelationShip = async (userId, otherUserId) => {
             },
         })
         console.log(">>> checkRelationship ", checkRelationship?.dataValues.id)
+
         if (!checkRelationship) {
             return {
                 errorCode: 1,
