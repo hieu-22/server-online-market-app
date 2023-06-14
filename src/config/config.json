@@ -7,7 +7,11 @@
         "dialect": "mysql",
         "timestamp": "true",
         "timezone": "+07:00",
-        "logging": false
+        "logging": false,
+        "define": {
+            "charset": "utf8mb4",
+            "collate": "utf8mb4_unicode_ci"
+        }
     },
     "test": {
         "username": "root",

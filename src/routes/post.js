@@ -9,7 +9,7 @@ import {
     handleUpdatePost,
     handleDeletePost,
     handleGetPostsByUserId,
-    handleSearchPosts,
+    handleSearch,
 } from "../controllers/post"
 import upload from "../middleware/cloudinaryUploader"
 
@@ -50,7 +50,7 @@ router.post(
 router.get("/posts/first", handleGetPosts)
 router.get("/posts/next", handleGetNextPosts)
 router.get("/posts/getByUserId", handleGetPostsByUserId)
-router.get("/posts/search", handleSearchPosts)
+router.get("/posts/search", handleSearch)
 router.get("/posts/:post_url", handleGetPostByUrl)
 /*UPDATE */
 // update post and image

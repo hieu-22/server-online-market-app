@@ -8,7 +8,7 @@ import {
     updatePost,
     deletePost,
     getPostsByUserId,
-    searchPosts,
+    searchForPostsAndUsers,
 } from "../services/post"
 import slugify from "slugify"
 import { uuid } from "uuidv4"
@@ -34,14 +34,19 @@ export const handleGetPostsByUserId = async (req, res) => {
         })
     }
 }
-export const handleSearchPosts = async (req, res) => {
-    const { searchKeys } = req.query
-    const decodedSearchKeys = decodeURIComponent(searchKeys)
+export const handleSearch = async (req, res) => {
+    const { q } = req.query
+    const decodedSearchKeys = decodeURIComponent(q)
     if (decodedSearchKeys.length <= 1) {
         return res.json([])
     }
+    const searchWords = decodedSearchKeys.trim().split(" ")
+
     try {
-        const response = await searchPosts({ searchKeys: decodedSearchKeys })
+        const response = await searchForPostsAndUsers({
+            searchKey: decodedSearchKeys,
+            searchWords,
+        })
         if (response.errorCode === 2) {
             return res.status(500).json(response)
         }

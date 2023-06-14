@@ -1,6 +1,6 @@
 import db from "../models/index"
 import { myCloudinary as cloudinary } from "../middleware/cloudinaryUploader"
-import { Op } from "sequelize"
+import sequelize, { Op } from "sequelize"
 
 const extractPublicIdFromUrl = (url) => {
     const publicId = url
@@ -36,23 +36,102 @@ export const getPostsByUserId = async ({ user_id }) => {
     }
 }
 
-export const searchPosts = async ({ searchKeys }) => {
+export const searchForPostsAndUsers = async ({ searchKey, searchWords }) => {
     try {
-        const response = await db.Posts.findAll({
-            where: {
-                [Op.or]: [
-                    { title: { [Op.like]: `%${searchKeys}%` } },
-                    {
-                        description: {
-                            [Op.like]: `%${searchKeys}%`,
+        const results = await Promise.all([
+            db.Users.findAll({
+                where: {
+                    [Op.or]: [
+                        {
+                            userName: {
+                                [Op.regexp]: `(^|\\s)(${searchKey}|${searchKey.replace(
+                                    /\s/g,
+                                    "|"
+                                )})($|\\s)`,
+                            },
                         },
-                    },
+                        {
+                            introduction: {
+                                [Op.regexp]: `(^|\\s)(${searchKey}|${searchKey.replace(
+                                    /\s/g,
+                                    "|"
+                                )})($|\\s)`,
+                            },
+                        },
+                    ],
+                },
+                collate: "utf8_general_ci",
+            }),
+
+            db.Posts.findAll({
+                where: {
+                    [Op.or]: [
+                        {
+                            title: {
+                                [Op.regexp]: `(^|\\s)(${searchKey}|${searchKey.replace(
+                                    /\s/g,
+                                    "|"
+                                )})($|\\s)`,
+                            },
+                        },
+                        {
+                            description: {
+                                [Op.regexp]: `(^|\\s)(${searchKey}|${searchKey.replace(
+                                    /\s/g,
+                                    "|"
+                                )})($|\\s)`,
+                            },
+                        },
+                    ],
+                },
+                include: [
+                    { model: db.Users, as: "author" },
+                    { model: db.Images, as: "images" },
                 ],
-            },
-        })
+                collate: "utf8_general_ci",
+                order: [
+                    [
+                        sequelize.literal(
+                            "CASE WHEN title LIKE '%" +
+                                searchKey +
+                                "%' THEN 1 ELSE 0 END"
+                        ),
+                        "DESC",
+                    ],
+                    [
+                        sequelize.literal(
+                            "CASE WHEN description LIKE '%" +
+                                searchKey +
+                                "%' THEN 1 ELSE 0 END"
+                        ),
+                        "DESC",
+                    ],
+                    [
+                        sequelize.literal(
+                            "CASE WHEN title LIKE '%" +
+                                searchWords.join("%") +
+                                "%' THEN 1 ELSE 0 END"
+                        ),
+                        "DESC",
+                    ],
+                    [
+                        sequelize.literal(
+                            "CASE WHEN description LIKE '%" +
+                                searchWords.join("%") +
+                                "%' THEN 1 ELSE 0 END"
+                        ),
+                        "DESC",
+                    ],
+                ],
+            }),
+        ])
+        const searchResult = {
+            users: results[0],
+            posts: results[1],
+        }
 
         return {
-            matchedPosts: response,
+            searchResult: searchResult,
             message: "OK",
         }
     } catch (error) {
