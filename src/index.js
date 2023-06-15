@@ -6,6 +6,7 @@ import auth from "./routes/auth"
 import user from "./routes/user"
 import post from "./routes/post"
 import conversation from "./routes/conversation"
+import { send } from "process"
 
 /**Configurations */
 const app = express()
@@ -17,6 +18,9 @@ app.use("/api", auth)
 app.use("/api", user)
 app.use("/api", post)
 app.use("/api", conversation)
+app.get("/", (req, res) => {
+    res.send("Welcome!")
+})
 
 /**WEBSOCKET */
 applyWebSocket(server)
