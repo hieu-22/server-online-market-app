@@ -10,6 +10,7 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
+            console.log(models)
             Conversation.belongsToMany(models.Users, {
                 through: "User_Conversation",
                 foreignKey: "conversation_id",
@@ -44,6 +45,16 @@ module.exports = (sequelize, DataTypes) => {
             post_id: {
                 type: DataTypes.INTEGER,
                 allowNull: true,
+            },
+            createdAt: {
+                allowNull: false,
+                type: DataTypes.DATE,
+                field: "createdat",
+            },
+            updatedAt: {
+                allowNull: false,
+                type: DataTypes.DATE,
+                field: "updatedat",
             },
         },
         {

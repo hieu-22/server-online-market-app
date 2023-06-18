@@ -1,4 +1,4 @@
-import db from "../models/index"
+import db from "../db/models/index"
 import { Op, where } from "sequelize"
 /**CREATE */
 export const addConversationByPost = async ({ userId, postId }) => {
@@ -103,7 +103,7 @@ export const addConversationByPost = async ({ userId, postId }) => {
                 {
                     model: db.Messages,
                     as: "messages",
-                    order: [["createdAt", "DESC"]],
+                    order: [["createdat", "DESC"]],
                 },
                 {
                     model: db.Users,
@@ -230,7 +230,7 @@ export const addConversationByUser = async ({ userId, otherUserId }) => {
                 {
                     model: db.Messages,
                     as: "messages",
-                    order: [["createdAt", "DESC"]],
+                    order: [["createdat", "DESC"]],
                 },
                 {
                     model: db.Users,
@@ -328,7 +328,7 @@ export const getConversationByUserId = async ({ userId }) => {
                     {
                         model: db.Messages,
                         as: "messages",
-                        order: [["createdAt", "DESC"]],
+                        order: [["createdat", "DESC"]],
                         limit: 1,
                     },
                     {
@@ -346,7 +346,7 @@ export const getConversationByUserId = async ({ userId }) => {
                         },
                     },
                 ],
-                order: [["updatedAt", "ASC"]],
+                order: [["updatedat", "ASC"]],
             },
         })
         return {
@@ -383,7 +383,7 @@ export const getChatById = async ({ conversationId, userId }) => {
                 {
                     model: db.Messages,
                     as: "messages",
-                    order: [["createdAt", "DESC"]],
+                    order: [["createdat", "DESC"]],
                     limit: 20,
                 },
                 {
@@ -449,7 +449,7 @@ export const getMoreMessagesById = async ({ chatId, offset }) => {
             where: {
                 conversation_id: chatId,
             },
-            order: [["createdAt", "DESC"]],
+            order: [["createdat", "DESC"]],
             offset: offset,
             limit: 10,
         })

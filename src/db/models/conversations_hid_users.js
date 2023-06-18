@@ -2,7 +2,7 @@
 import { Model } from "sequelize"
 
 module.exports = (sequelize, DataTypes) => {
-    class User_Conversation extends Model {
+    class Conversations_Hid_Users extends Model {
         /**
          * Helper method for defining associations.
          * This method is not a part of Sequelize lifecycle.
@@ -10,17 +10,17 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             // define association here
-            User_Conversation.belongsTo(models.Users, {
+            Conversations_Hid_Users.belongsTo(models.Users, {
                 foreignKey: "user_id",
-                as: "user",
+                as: "hid_user",
             })
-            User_Conversation.belongsTo(models.Conversations, {
+            Conversations_Hid_Users.belongsTo(models.Conversations, {
                 foreignKey: "conversation_id",
-                as: "conversation",
+                as: "hidden_conversation",
             })
         }
     }
-    User_Conversation.init(
+    Conversations_Hid_Users.init(
         {
             id: {
                 type: DataTypes.INTEGER,
@@ -35,13 +35,22 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.INTEGER,
                 allowNull: false,
             },
+            createdAt: {
+                allowNull: false,
+                type: DataTypes.DATE,
+                field: "createdat",
+            },
+            updatedAt: {
+                allowNull: false,
+                type: DataTypes.DATE,
+                field: "updatedat",
+            },
         },
         {
             sequelize,
-            modelName: "User_Conversation",
-            tableName: "user_conversation",
+            modelName: "Conversations_Hid_Users",
+            tableName: "Conversations_Hid_Users",
         }
     )
-
-    return User_Conversation
+    return Conversations_Hid_Users
 }

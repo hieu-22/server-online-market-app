@@ -51,26 +51,6 @@ module.exports = (sequelize, DataTypes) => {
             description: {
                 type: DataTypes.TEXT,
                 allowNull: false,
-                // set(value) {
-                //     console.log(">>> value: ", value)
-                //     const deflatedValue = pako.deflate(value)
-                //     console.log(">>> deflatedValue: ", value)
-                //     this.setDataValue(
-                //         "description",
-                //         JSON.stringify(deflatedValue)
-                //     )
-                // },
-                // get() {
-                //     const deflatedDescription = this.getDataValue("description")
-
-                //     const inflatedDescription = pako.inflate(
-                //         JSON.parse(deflatedDescription),
-                //         {
-                //             to: "string",
-                //         }
-                //     )
-                //     return inflatedDescription
-                // },
             },
             address: {
                 type: DataTypes.STRING,
@@ -85,6 +65,17 @@ module.exports = (sequelize, DataTypes) => {
             expiryDate: {
                 allowNull: false,
                 type: DataTypes.DATE,
+                field: "expirydate",
+            },
+            createdAt: {
+                allowNull: false,
+                type: DataTypes.DATE,
+                field: "createdat",
+            },
+            updatedAt: {
+                allowNull: false,
+                type: DataTypes.DATE,
+                field: "updatedat",
             },
         },
         {

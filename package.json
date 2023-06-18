@@ -5,7 +5,9 @@
     "main": "index.js",
     "scripts": {
         "dev": "nodemon --exec babel-node src/index.js",
-        "start": "babel-node src/index.js"
+        "start": "babel-node src/index.js",
+        "build-src": "babel src -d build --copy-files",
+        "build": "node build/index.js"
     },
     "keywords": [],
     "author": "",
@@ -28,6 +30,8 @@
         "multer-storage-cloudinary": "^4.0.0",
         "mysql2": "^3.2.0",
         "pako": "^2.1.0",
+        "pg": "^8.11.0",
+        "pg-hstore": "^2.3.4",
         "sequelize": "^6.29.1",
         "slugify": "^1.6.6",
         "socket.io": "^4.6.1",

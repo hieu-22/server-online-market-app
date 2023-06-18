@@ -1,6 +1,5 @@
 "use strict"
-const { Model, Deferrable } = require("sequelize")
-import Post from "./post"
+const { Model } = require("sequelize")
 
 module.exports = (sequelize, DataTypes) => {
     class Image extends Model {
@@ -22,10 +21,21 @@ module.exports = (sequelize, DataTypes) => {
             imageUrl: {
                 type: DataTypes.STRING,
                 allowNull: false,
+                field: "imageurl",
             },
             post_id: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
+            },
+            createdAt: {
+                allowNull: false,
+                type: DataTypes.DATE,
+                field: "createdat",
+            },
+            updatedAt: {
+                allowNull: false,
+                type: DataTypes.DATE,
+                field: "updatedat",
             },
         },
         {

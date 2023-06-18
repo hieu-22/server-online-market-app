@@ -1,7 +1,6 @@
 "use strict"
 import bcrypt from "bcrypt"
 const { Model } = require("sequelize")
-import db from "./index"
 
 module.exports = (sequelize, DataTypes) => {
     class User extends Model {
@@ -68,6 +67,7 @@ module.exports = (sequelize, DataTypes) => {
             userName: {
                 type: DataTypes.STRING,
                 allowNull: false,
+                field: "username",
             },
             avatar: {
                 type: DataTypes.STRING,
@@ -75,14 +75,26 @@ module.exports = (sequelize, DataTypes) => {
             phoneNumber: {
                 type: DataTypes.STRING(11),
                 unique: true,
+                field: "phonenumber",
             },
             isOnline: {
                 type: DataTypes.BOOLEAN,
                 defaultValue: false,
+                field: "isonline",
             },
             introduction: {
                 type: DataTypes.TEXT,
                 defaultValue: "",
+            },
+            createdAt: {
+                allowNull: false,
+                type: DataTypes.DATE,
+                field: "createdat",
+            },
+            updatedAt: {
+                allowNull: false,
+                type: DataTypes.DATE,
+                field: "updatedat",
             },
         },
         {

@@ -12,7 +12,7 @@ import {
 } from "../services/post"
 import slugify from "slugify"
 import { uuid } from "uuidv4"
-import db from "../models/index"
+import db from "../db/models/index"
 
 import { myCloudinary as cloudinary } from "../middleware/cloudinaryUploader"
 

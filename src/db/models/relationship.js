@@ -25,10 +25,22 @@ module.exports = (sequelize, DataTypes) => {
             followedUser: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
+                field: "followeduser",
             },
             follower: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
+                field: "follower",
+            },
+            createdAt: {
+                allowNull: false,
+                type: DataTypes.DATE,
+                field: "createdat",
+            },
+            updatedAt: {
+                allowNull: false,
+                type: DataTypes.DATE,
+                field: "updatedat",
             },
         },
         {

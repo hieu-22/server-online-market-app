@@ -1,12 +1,12 @@
 "use strict"
-
+require("dotenv").config()
 const fs = require("fs")
 const path = require("path")
 const Sequelize = require("sequelize")
 const process = require("process")
 const basename = path.basename(__filename)
 const env = process.env.NODE_ENV || "development"
-const config = require(__dirname + "/../config/config.json")[env]
+const config = require(__dirname + "/../../config/database.js")[env]
 const db = {}
 
 let sequelize
@@ -15,11 +15,20 @@ if (config.use_env_variable) {
 } else {
     sequelize = new Sequelize(
         config.database,
-        config.username,
+        config.userName,
         config.password,
         config
     )
 }
+
+sequelize
+    .authenticate()
+    .then(() => {
+        console.log("Connection has been established successfully.")
+    })
+    .catch((err) => {
+        console.error("Unable to connect to the database:", err)
+    })
 
 fs.readdirSync(__dirname)
     .filter((file) => {

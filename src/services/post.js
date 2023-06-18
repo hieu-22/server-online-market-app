@@ -1,4 +1,4 @@
-import db from "../models/index"
+import db from "../db/models/index"
 import { myCloudinary as cloudinary } from "../middleware/cloudinaryUploader"
 import sequelize, { Op } from "sequelize"
 
@@ -20,7 +20,7 @@ export const getPostsByUserId = async ({ user_id }) => {
             where: {
                 user_id: user_id,
             },
-            order: [["createdAt", "DESC"]],
+            order: [["createdat", "DESC"]],
             include: [{ model: db.Images, as: "images" }],
         })
         return {
@@ -148,7 +148,7 @@ export const searchForPostsAndUsers = async ({ searchKey, searchWords }) => {
 export const getPosts = async ({ limit }) => {
     try {
         const response = await db.Posts.findAll({
-            order: [["createdAt", "DESC"]],
+            order: [["createdat", "DESC"]],
             limit: limit,
             include: [
                 { model: db.Images, as: "images" },
@@ -175,7 +175,7 @@ export const getNextPosts = async ({ limit, lastPostCreatedAt }) => {
             where: {
                 createdAt: { [Op.lt]: lastPostCreatedAt },
             },
-            order: [["createdAt", "DESC"]],
+            order: [["createdat", "DESC"]],
             limit: limit,
             include: [
                 { model: db.Images, as: "images" },
@@ -220,7 +220,7 @@ export const getPostByUrl = async (post_url) => {
                     model: db.Images,
                     as: "images",
                     attributes: {
-                        exclude: ["createdAt", "updatedAt", "post_id"],
+                        exclude: ["createdat", "updatedat", "post_id"],
                     },
                 },
                 {

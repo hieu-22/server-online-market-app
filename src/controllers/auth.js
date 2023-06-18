@@ -1,7 +1,5 @@
-import db from "../models/index"
+import db from "../db/models/index"
 import jwt from "jsonwebtoken"
-import { Op } from "sequelize"
-import bcrypt from "bcrypt"
 import { login } from "../services/auth"
 
 export const handleRegister = async (req, res) => {

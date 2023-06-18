@@ -35,11 +35,20 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.INTEGER,
                 allowNull: false,
             },
+            createdAt: {
+                allowNull: false,
+                type: DataTypes.DATE,
+                field: "createdat",
+            },
+            updatedAt: {
+                allowNull: false,
+                type: DataTypes.DATE,
+                field: "updatedat",
+            },
         },
         {
             sequelize,
             modelName: "SavedPosts",
-            tableName: "savedPosts",
         }
     )
 

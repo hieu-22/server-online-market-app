@@ -1,6 +1,5 @@
 "use strict"
 const { Model } = require("sequelize")
-import db from "./index"
 
 module.exports = (sequelize, DataTypes) => {
     class Message extends Model {
@@ -75,6 +74,16 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.BOOLEAN,
                 defaultValue: false,
                 allowNull: false,
+            },
+            createdAt: {
+                allowNull: false,
+                type: DataTypes.DATE,
+                field: "createdat",
+            },
+            updatedAt: {
+                allowNull: false,
+                type: DataTypes.DATE,
+                field: "updatedat",
             },
         },
         {

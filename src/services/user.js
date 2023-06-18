@@ -1,4 +1,4 @@
-import db from "../models/index"
+import db from "../db/models/index"
 import bcrypt from "bcrypt"
 import { Op, where } from "sequelize"
 import sequelize from "sequelize"
@@ -265,7 +265,7 @@ export const getSavedPostsByUserId = async (userId) => {
                     as: "images",
                 },
             },
-            order: [["createdAt", "DESC"]],
+            order: [["createdat", "DESC"]],
         })
         return {
             savedPosts: savedPosts,
@@ -346,7 +346,7 @@ export const deleteSavedPost = async ({ userId, postId }) => {
                     as: "images",
                 },
             },
-            order: [["createdAt", "DESC"]],
+            order: [["createdat", "DESC"]],
         })
 
         return {

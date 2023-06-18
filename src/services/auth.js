@@ -1,4 +1,4 @@
-import db from "../models/index"
+import db from "../db/models/index"
 import bcrypt from "bcrypt"
 import { Op } from "sequelize"
 import jwt from "jsonwebtoken"
