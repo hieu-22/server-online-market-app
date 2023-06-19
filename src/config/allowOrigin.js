@@ -1,6 +1,4 @@
-import express from "express"
-import cors from "cors"
-const app = express()
+require("dotenv").config()
 
 const allowOrigins = ["http://localhost:3000", undefined, process.env.URL_REACT]
 
