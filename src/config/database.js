@@ -43,11 +43,16 @@ module.exports = {
         port: process.env.DB_PORT,
         dialect: process.env.DB_DIALECT,
         schema: process.env.DB_SCHEMA,
-        timestamp: "true",
-        timezone: "+07:00",
-        logging: false,
+        ssl: true,
         dialectOptions: {
             bigNumberStrings: true,
         },
+        define: {
+            schema: "onlineMarketDB",
+        },
+        searchPath: "onlineMarketDB",
+        timestamp: true,
+        timezone: "+07:00",
+        logging: false,
     },
 }
