@@ -5,7 +5,7 @@ const app = express()
 const allowOrigins = [
     "http://localhost:3000",
     undefined,
-    "https://emarket-client-omega.vercel.app/",
+    "https://emarket-client-omega.vercel.app",
 ]
 
 export const corsOptions = {
