@@ -1,6 +1,6 @@
 require("dotenv").config()
 
-const allowOrigins = ["http://localhost:3000", undefined, process.env.URL_REACT]
+const allowOrigins = [process.env.URL_REACT, undefined]
 
 export const corsOptions = {
     origin: function (origin, callback) {
