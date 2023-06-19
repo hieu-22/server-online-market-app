@@ -19,9 +19,10 @@ import {
 const applyWebSocket = (server) => {
     const io = new Server(server, {
         cors: {
-            origin: "http://localhost:3000",
+            origin: ["http://localhost:3000", process.env.URL_REACT],
         },
     })
+
     const activeSockets = new Map()
     io.on("connection", async (socket) => {
         // Authentication process

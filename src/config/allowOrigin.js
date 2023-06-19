@@ -2,11 +2,7 @@ import express from "express"
 import cors from "cors"
 const app = express()
 
-const allowOrigins = [
-    "http://localhost:3000",
-    undefined,
-    "https://emarket-client-omega.vercel.app",
-]
+const allowOrigins = ["http://localhost:3000", undefined, process.env.URL_REACT]
 
 export const corsOptions = {
     origin: function (origin, callback) {
