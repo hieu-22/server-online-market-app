@@ -48,14 +48,14 @@ module.exports = {
         dialectOptions: {
             bigNumberStrings: true,
             useUTC: false,
-            timezone: "+07:00",
+            timezone: "Asia/Bangkok",
         },
         define: {
             schema: "onlineMarketDB",
         },
         searchPath: "onlineMarketDB",
         timestamp: true,
-        timezone: "+07:00",
+        timezone: "Asia/Bangkok",
         logging: false,
     },
 }
