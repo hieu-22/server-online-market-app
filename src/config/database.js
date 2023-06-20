@@ -48,6 +48,7 @@ module.exports = {
         dialectOptions: {
             bigNumberStrings: true,
             useUTC: false,
+            timezone: "+07:00",
         },
         define: {
             schema: "onlineMarketDB",
