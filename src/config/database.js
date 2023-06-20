@@ -11,6 +11,7 @@ module.exports = {
         dialectOptions: {
             bigNumberStrings: true,
             ssl: false,
+            useUTC: false,
         },
         timestamp: true,
         timezone: "+07:00",
@@ -46,7 +47,7 @@ module.exports = {
         ssl: true,
         dialectOptions: {
             bigNumberStrings: true,
-            timezone: "+07:00",
+            useUTC: false,
         },
         define: {
             schema: "onlineMarketDB",
