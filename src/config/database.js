@@ -47,7 +47,6 @@ module.exports = {
         ssl: true,
         dialectOptions: {
             bigNumberStrings: true,
-            useUTC: false,
             timezone: "Asia/Bangkok",
         },
         define: {

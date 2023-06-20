@@ -95,6 +95,8 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull: false,
                 type: DataTypes.DATE,
                 field: "updatedat",
+                defaultValue: DataTypes.NOW,
+                timezone: "+07:00",
             },
         },
         {
