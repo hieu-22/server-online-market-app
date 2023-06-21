@@ -58,6 +58,7 @@ npm run dev
 ```
 ## API Routes
 Check [emarket-api](https://www.postman.com/maintenance-saganist-21460907/workspace/nmhieu191/collection/25292509-97a03a47-f4a0-4cdb-9dc3-94e6f1a8bb1c?action=share&creator=25292509) on postman.
+[Documentation](https://www.postman.com/maintenance-saganist-21460907/workspace/nmhieu191/documentation/25292509-97a03a47-f4a0-4cdb-9dc3-94e6f1a8bb1c) 
 
 ## Technologies Used
 - NodeJS
