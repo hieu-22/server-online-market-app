@@ -11,7 +11,7 @@ npm install
 ```
 ## Usage
 ### 1. Set up .env file
-You can customize these variables to match your local dev environment:
+Modify these variables to match your local dev environment:
 ```sh
 PORT=3001
 NODE_ENV=development
@@ -29,7 +29,7 @@ DB_PORT=5432
 DB_DIALECT=postgres
 DB_SCHEMA=yourSchema
 ```
-You can use my Cloudinary for image storage or your own:
+You can use my Cloudinary or your own for image storage:
 ```sh
 # CLOUDINARY
 CLOUDINARY_URL=cloudinary://538598325694588:4G_C6DuitOSGSQsRa88MElQoH6Y@duhbzyhtj
@@ -43,13 +43,14 @@ For more information:
 - [Node SDK](https://cloudinary.com/documentation/node_quickstart)
 - [React SDK](https://cloudinary.com/documentation/react_integration)
 
-### 2. To run the server
-To run server once
+### 2. Run the server
+Run server once:
 ```sh
 npm start
 ```
-To run with nodemon.
+Run with nodemon:
 ```sh
+# Make sure that you have nodemon installed
 npm install -g nodemon
 ```
 ```sh
