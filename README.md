@@ -1,5 +1,4 @@
-# EMARKET SERVER
-## Introduction
+# Emarket Server
 The simple server for an e-commerce website utilizes the MVC structure to build routes and provide, user management, post management, and real-time chat with socketIO.
 ## Installation
 ```sh
@@ -8,30 +7,7 @@ npm install
 ```
 ## Usage
 ### 1. Set up .env file
-```sh
-PORT=3001
-NODE_ENV=development
-URL_REACT=http://localhost:3000
-
-# JSON WEB TOKEN
-JWT_SECRET_KEY=yourSecretKey
-
-# CLOUDINARY
-CLOUDINARY_URL=cloudinary://538598325694588:4G_C6DuitOSGSQsRa88MElQoH6Y@duhbzyhtj
-CLOUDINARY_NAME=duhbzyhtj
-CLOUDINARY_KEY=538598325694588
-CLOUDINARY_SECRET=4G_C6DuitOSGSQsRa88MElQoH6Y
-
-# POSTGRES DATABASE
-DB_HOST=db.grnvjtxnwkdlbvxtvbsz.supabase.co
-DB_NAME=postgres
-DB_USERNAME=postgres
-DB_PASSWORD=@Email123hieu123
-DB_PORT=5432
-DB_DIALECT=postgres
-DB_SCHEMA=onlineMarketDB
-```
-You can customize these variables to match your requirements:
+You can customize these variables to match your local dev environment:
 ```sh
 PORT=3001
 NODE_ENV=development
@@ -41,16 +17,15 @@ URL_REACT=http://localhost:3000
 JWT_SECRET_KEY=yourSecretKey
 
 # POSTGRES DATABASE
-DB_HOST=db.grnvjtxnwkdlbvxtvbsz.supabase.co
-DB_NAME=postgres
+DB_HOST=yourDBhost
+DB_NAME=public
 DB_USERNAME=postgres
-DB_PASSWORD=@Email123hieu123
+DB_PASSWORD=password
 DB_PORT=5432
 DB_DIALECT=postgres
-DB_SCHEMA=onlineMarketDB
+DB_SCHEMA=yourSchema
 ```
-It's more conveninent to use the same configuration for CLOUDINARY.
-
+You can use my Cloudinary for image storage or your own:
 ```sh
 # CLOUDINARY
 CLOUDINARY_URL=cloudinary://538598325694588:4G_C6DuitOSGSQsRa88MElQoH6Y@duhbzyhtj
@@ -58,9 +33,11 @@ CLOUDINARY_NAME=duhbzyhtj
 CLOUDINARY_KEY=538598325694588
 CLOUDINARY_SECRET=4G_C6DuitOSGSQsRa88MElQoH6Y
 ```
+Note: If you use your own Cloudinary, you will need to update your Cloudinary configuration in the [Emarket Client](https://github.com/hieu-22/client-online-market-app) as well.
 For more information:
-- [https://www.npmjs.com/package/multer-storage-cloudinary](https://www.npmjs.com/package/multer-storage-cloudinary)
-- [https://cloudinary.com/documentation/node_quickstart](https://cloudinary.com/documentation/node_quickstart)
+- [Multer Storage Cloudinary](https://www.npmjs.com/package/multer-storage-cloudinary)
+- [Node SDK](https://cloudinary.com/documentation/node_quickstart)
+- [React SDK](https://cloudinary.com/documentation/react_integration)
 
 ### 2.To run the server
 ```sh
@@ -75,12 +52,40 @@ npm install -g nodemon
 npm run dev
 ```
 ## API Routes
-- [/api/register] - to register a new account
-- [/api/login] - to login
-- [/api/user/:userId](https://emarket-server.onrender.com/api/user/1) - to get information of a specific user
-- [/api/user/:userId/get-relative-users](https://emarket-server.onrender.com/api/user/1/get-relative-users) - to get followers and followedUsers information of a specific user
-- [/api/user/get-other-users?userId=1] - to get followers and followedUsers information, and other recommended users of a specific user
-- [/api/user/get-saved-posts?userId=1] - to get posts that the user have saved 
+You can check and test on [postman](https://www.postman.com/maintenance-saganist-21460907/workspace/nmhieu191/collection/25292509-97a03a47-f4a0-4cdb-9dc3-94e6f1a8bb1c?action=share&creator=25292509)
+```sh
+allowOrigins: [process.env.URL_REACT, undefined]
+```
+- `/api/register` - to register a new account
+- `/api/login` - to login
+- /api/user/:userId
+```sh
+# To get information of the user by userId (1)
+fetch('https://emarket-server.onrender.com/api/user/1')
+  .then((response) => response.json())
+  .then((json) => console.log(json));
+```
+- `/api/user/:userId/get-relative-users`
+```sh
+# to get followers and followedUsers information of the user by userId (1)
+fetch('https://emarket-server.onrender.com/api/user/1/get-relative-users')
+  .then((response) => response.json())
+  .then((json) => console.log(json));
+```
+- `/api/user/get-other-users`
+```sh
+# to get followers and followedUsers information, and other recommended users of the user with userId is 1
+fetch('https://emarket-server.onrender.com/api/user/get-other-users?userId=1')
+  .then((response) => response.json())
+  .then((json) => console.log(json));
+```
+- `/api/user/get-saved-posts`
+```sh
+# to get posts that the user with userId is 1 have saved
+fetch('https://emarket-server.onrender.com/api/user/get-saved-posts?userId=1')
+  .then((response) => response.json())
+  .then((json) => console.log(json));
+```
 - [/api/user/:id/update-user-information] - to update user's information (except for 'avatar')
 - [/api/user/:id/changeAvatar] - to update user's avatar
 - [/api/user/:id/update-password] - to update user's password
