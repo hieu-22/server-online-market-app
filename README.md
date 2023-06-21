@@ -37,7 +37,7 @@ CLOUDINARY_NAME=duhbzyhtj
 CLOUDINARY_KEY=538598325694588
 CLOUDINARY_SECRET=4G_C6DuitOSGSQsRa88MElQoH6Y
 ```
-If you use your own Cloudinary, you will need to update your Cloudinary configuration in the [Emarket Client](https://github.com/hieu-22/client-online-market-app) as well.
+If you use your own Cloudinary, you will need to update your Cloudinary configuration in the [emarket Client](https://github.com/hieu-22/client-online-market-app) as well.
 For more information:
 - [Multer Storage Cloudinary](https://www.npmjs.com/package/multer-storage-cloudinary)
 - [Node SDK](https://cloudinary.com/documentation/node_quickstart)
@@ -63,4 +63,4 @@ Check [emarket-api](https://www.postman.com/maintenance-saganist-21460907/worksp
 - NodeJS
 - ExpressJS
 - SocketIO
-- DATABASE: PostgreSQL (SEQUELIZE)
+- Database: PostgreSQL (Sequelize)
