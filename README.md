@@ -1,5 +1,8 @@
-# emarket Web Server
-The simple server for an e-commerce website utilizes the MVC structure to build routes and provide, user management, post management, and real-time chat with socketIO.
+# The emarket web app (server)
+
+This project is a simple e-commerce web app with core features are posting product, real-time chating which are built using popular technologies such as ReactJS, NodeJS, SocketIo, PostgreSQL, etc.
+Source code: [Client](https://github.com/hieu-22/client-online-market-app.git) and [Server](https://github.com/hieu-22/server-online-market-app.git)
+
 ## Installation
 Clone the repository
 ```sh
@@ -64,3 +67,6 @@ Check [emarket-api](https://www.postman.com/maintenance-saganist-21460907/worksp
 - ExpressJS
 - SocketIO
 - Database: PostgreSQL (Sequelize)
+- 
+## License
+I'm happy that someone appreciates my project and use it for their studying or any purposes. It's free to use this project.
