@@ -70,6 +70,6 @@ Check [emarket-api](https://www.postman.com/maintenance-saganist-21460907/worksp
 - ExpressJS
 - SocketIO
 - Database: PostgreSQL (Sequelize)
-- 
+
 ## License
 I'm happy that someone appreciates my project and use it for their studying or any purposes. It's free to use this project.
