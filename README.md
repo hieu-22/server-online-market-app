@@ -1,37 +1,44 @@
-# emarket server
-## Introduction
-The simple server for an e-commerce website utilizes the MVC structure to build routes and provide, user management, post management, and real-time chat with socketIO.
+# The emarket web app (server)
+
+This project is a simple e-commerce web app with core features are posting product, real-time chating which are built using popular technologies such as ReactJS, NodeJS, SocketIo, PostgreSQL, etc.
+
+The app uses Node.js v18 as development environment.
+
+Source:
+
+-   [Client](https://github.com/hieu-22/client-online-market-app.git)
+-   [Server](https://github.com/hieu-22/server-online-market-app.git)
+
+## Table of Contents
+
+-   [Installation](#installation)
+-   [Usage](#usage)
+-   [API Routes](#api-routes)
+-   [Technologies Used](#technologies-used)
+-   [License](#license)
+
 ## Installation
+
+Note: The app uses Node.js v18 as development environment.
+
+Clone the repository
+
 ```sh
 $git clone https://github.com/hieu-22/server-online-market-app.git
+```
+
+Install dependencies by running npm install
+
+```sh
 npm install
 ```
+
 ## Usage
+
 ### 1. Set up .env file
-```sh
-PORT=3001
-NODE_ENV=development
-URL_REACT=http://localhost:3000
 
-# JSON WEB TOKEN
-JWT_SECRET_KEY=yourSecretKey
+Modify these variables to match your local dev environment:
 
-# CLOUDINARY
-CLOUDINARY_URL=cloudinary://538598325694588:4G_C6DuitOSGSQsRa88MElQoH6Y@duhbzyhtj
-CLOUDINARY_NAME=duhbzyhtj
-CLOUDINARY_KEY=538598325694588
-CLOUDINARY_SECRET=4G_C6DuitOSGSQsRa88MElQoH6Y
-
-# POSTGRES DATABASE
-DB_HOST=db.grnvjtxnwkdlbvxtvbsz.supabase.co
-DB_NAME=postgres
-DB_USERNAME=postgres
-DB_PASSWORD=@Email123hieu123
-DB_PORT=5432
-DB_DIALECT=postgres
-DB_SCHEMA=onlineMarketDB
-```
-You can customize these variables to match your requirements:
 ```sh
 PORT=3001
 NODE_ENV=development
@@ -41,15 +48,16 @@ URL_REACT=http://localhost:3000
 JWT_SECRET_KEY=yourSecretKey
 
 # POSTGRES DATABASE
-DB_HOST=db.grnvjtxnwkdlbvxtvbsz.supabase.co
-DB_NAME=postgres
+DB_HOST=yourDBhost
+DB_NAME=public
 DB_USERNAME=postgres
-DB_PASSWORD=@Email123hieu123
+DB_PASSWORD=password
 DB_PORT=5432
 DB_DIALECT=postgres
-DB_SCHEMA=onlineMarketDB
+DB_SCHEMA=yourSchema
 ```
-It's more conveninent to use the same configuration for CLOUDINARY.
+
+You can use my Cloudinary or your own for image storage:
 
 ```sh
 # CLOUDINARY
@@ -58,38 +66,43 @@ CLOUDINARY_NAME=duhbzyhtj
 CLOUDINARY_KEY=538598325694588
 CLOUDINARY_SECRET=4G_C6DuitOSGSQsRa88MElQoH6Y
 ```
+
+If you use your own Cloudinary, you will need to update your Cloudinary configuration in the [Client](https://github.com/hieu-22/client-online-market-app/tree/master#usage) as well.
 For more information:
-- [https://www.npmjs.com/package/multer-storage-cloudinary](https://www.npmjs.com/package/multer-storage-cloudinary)
-- [https://cloudinary.com/documentation/node_quickstart](https://cloudinary.com/documentation/node_quickstart)
 
-### 2.To run the server
+-   [Multer Storage Cloudinary](https://www.npmjs.com/package/multer-storage-cloudinary)
+-   [Node SDK](https://cloudinary.com/documentation/node_quickstart)
+
+### 2. Run the server
+
+Run server once:
+
 ```sh
 npm start
 ```
-To run with nodemon
-Note: make sure that you have nodemon installed globally
+
+Run with nodemon:
+
 ```sh
+# Make sure that you have nodemon installed
 npm install -g nodemon
 ```
+
 ```sh
 npm run dev
 ```
+
 ## API Routes
-[/api/register](https://emarket-server.onrender.com/api/register) -  to register a new account
-[/api/login](https://emarket-server.onrender.com/api/login) - to login
-Read Users:
-[/api/user/:userId](https://emarket-server.onrender.com/api/user/1) - to get information of a specific user by userId
-[/api/user/:userId/get-relative-users](https://emarket-server.onrender.com/api/user/1/get-relative-users) - to get followers and followedUsers information of a specific user by userId
-router.get("/user/get-other-users", handleGetOtherUsers)
-[/api/user/:userId/get-relative-users](https://emarket-server.onrender.com/api/user/1/get-relative-users)
-[/api/user/get-other-users?userId=1]
-[/api/user/get-saved-posts?userId=1]
-[/api/user/:id/update-user-information]
-[/api/user/:id/changeAvatar]
-[/api/user/:id/update-password]
-[/api/user/:id/update-status]
-[/api/user/:id/remove-relationship]
-[/api/user/delete-saved-post]
 
+Check [emarket-api](https://www.postman.com/maintenance-saganist-21460907/workspace/nmhieu191/documentation/25292509-97a03a47-f4a0-4cdb-9dc3-94e6f1a8bb1c) on postman.
 
+## Technologies Used
 
+-   NodeJS
+-   ExpressJS
+-   SocketIO
+-   Database: PostgreSQL (Sequelize)
+
+## License
+
+I'm happy that someone appreciates my project and use it for their studying or any purposes. It's free to use this project.
