@@ -1,7 +1,8 @@
 # The emarket web app (server)
 
 This project is a simple e-commerce web app with core features are posting product, real-time chating which are built using popular technologies such as ReactJS, NodeJS, SocketIo, PostgreSQL, etc.
-Source code: [Client](https://github.com/hieu-22/client-online-market-app.git) and [Server](https://github.com/hieu-22/server-online-market-app.git)
+- [Client](https://github.com/hieu-22/client-online-market-app.git)
+- [Server](https://github.com/hieu-22/server-online-market-app.git)
 
 ## Installation
 Clone the repository
