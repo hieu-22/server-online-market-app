@@ -19,7 +19,9 @@ app.use("/api", user)
 app.use("/api", post)
 app.use("/api", conversation)
 app.get("/", (req, res) => {
-    res.send("Welcome!")
+    res.send(
+        "<h1 style='color:rgb(74 74 74)'>Click <a href='https://www.postman.com/maintenance-saganist-21460907/workspace/nmhieu191/documentation/25292509-97a03a47-f4a0-4cdb-9dc3-94e6f1a8bb1c'>API Routes<a/> for more information</h1> "
+    )
 })
 
 /**WEBSOCKET */

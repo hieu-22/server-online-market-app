@@ -74,7 +74,9 @@ export const handleRegister = async (req, res) => {
             message: "Register successfully!",
         })
     } catch (error) {
-        return res.status(500).json({ error: error.message })
+        return res
+            .status(500)
+            .json({ error: error.message, message: "Internal Server Error" })
     }
 }
 

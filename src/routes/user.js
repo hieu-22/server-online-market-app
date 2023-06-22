@@ -22,7 +22,7 @@ const router = express.Router()
 
 /**CREATE */
 router.post("/user/:userId/save-post", handleSavePost)
-router.post("/user/:id/add-relationship", handleAddRelationship)
+router.post("/user/:id/add-relationship", verifyToken, handleAddRelationship)
 
 /**READ */
 router.get("/user/get-other-users", handleGetOtherUsers)
@@ -55,7 +55,11 @@ router.patch(
 router.patch("/user/:id/update-password", verifyToken, handleUpdatePassword)
 router.patch("/user/:id/update-status", handleUpdateStatus)
 /**DELETE */
-router.delete("/user/:id/remove-relationship", handleRemoveRelationShip)
-router.delete("/user/delete-saved-post", handleDeleteSavedPost)
+router.delete(
+    "/user/:id/remove-relationship",
+    verifyToken,
+    handleRemoveRelationShip
+)
+router.delete("/user/delete-saved-post", verifyToken, handleDeleteSavedPost)
 
 export default router
