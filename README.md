@@ -2,9 +2,18 @@
 
 This project is a simple e-commerce web app with core features are posting product, real-time chating which are built using popular technologies such as ReactJS, NodeJS, SocketIo, PostgreSQL, etc.
 
+The app uses Node.js v18 as development environment.
+
 Source:
 - [Client](https://github.com/hieu-22/client-online-market-app.git)
 - [Server](https://github.com/hieu-22/server-online-market-app.git)
+
+## Table of Contents
+- [Installation](#installation)
+- [Usage](#usage)
+- [API Routes](#api-routes)
+- [Technologies Used](#technologies-used)
+- [License](#license)
 
 ## Installation
 Clone the repository
@@ -43,11 +52,10 @@ CLOUDINARY_NAME=duhbzyhtj
 CLOUDINARY_KEY=538598325694588
 CLOUDINARY_SECRET=4G_C6DuitOSGSQsRa88MElQoH6Y
 ```
-If you use your own Cloudinary, you will need to update your Cloudinary configuration in the [emarket Client](https://github.com/hieu-22/client-online-market-app) as well.
+If you use your own Cloudinary, you will need to update your Cloudinary configuration in the [Client](https://github.com/hieu-22/client-online-market-app/tree/master#usage) as well.
 For more information:
 - [Multer Storage Cloudinary](https://www.npmjs.com/package/multer-storage-cloudinary)
 - [Node SDK](https://cloudinary.com/documentation/node_quickstart)
-- [React SDK](https://cloudinary.com/documentation/react_integration)
 
 ### 2. Run the server
 Run server once:
